@@ -29,6 +29,7 @@
             gitsigns-nvim
             lze
             nvim-treesitter.withAllGrammars
+            snacks-nvim
             vim-moonfly-colors
           ];
 
@@ -37,12 +38,14 @@
             lazy = true;
             data = with pkgs.vimPlugins; [
               blink-cmp
+              bufferline-nvim
               conform-nvim
-              fzf-lua
               lspsaga-nvim
               lualine-nvim
+              noice-nvim
               nvim-lint
               nvim-lspconfig
+              smart-splits-nvim
               trouble-nvim
             ];
           };
@@ -50,7 +53,6 @@
           config.runtimePkgs = with pkgs; [
             deadnix
             fd
-            fzf
             git
             lua-language-server
             nixd
