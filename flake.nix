@@ -36,6 +36,11 @@
             data = pkgs.vimPlugins.nvim-lspconfig;
           };
 
+          config.specs.blink-cmp = {
+            lazy = true;
+            data = pkgs.vimPlugins.blink-cmp;
+          };
+
           config.specs.fzf-lua = {
             lazy = true;
             data = pkgs.vimPlugins.fzf-lua;
