@@ -19,13 +19,14 @@ return {
           end
 
           map("n", "grn", vim.lsp.buf.rename, "Rename symbol")
-          map("n", "gra", vim.lsp.buf.code_action, "Code action")
+          map({ "n", "x" }, "gra", vim.lsp.buf.code_action, "Code action")
+          map("n", "grx", vim.lsp.codelens.run, "Run codelens")
           map("n", "grr", vim.lsp.buf.references, "References")
           map("n", "gri", vim.lsp.buf.implementation, "Implementation")
           map("n", "grt", vim.lsp.buf.type_definition, "Type definition")
           map("n", "gO", vim.lsp.buf.document_symbol, "Document symbols")
           map("n", "gD", vim.lsp.buf.declaration, "Declaration")
-          map("i", "<C-s>", vim.lsp.buf.signature_help, "Signature help")
+          map({ "i", "s" }, "<C-s>", vim.lsp.buf.signature_help, "Signature help")
         end,
       })
 

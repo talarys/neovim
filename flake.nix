@@ -26,8 +26,10 @@
 
           # plugins that must be loaded at startup
           config.specs.startup = with pkgs.vimPlugins; [
+            gitsigns-nvim
             lze
             nvim-treesitter.withAllGrammars
+            vim-moonfly-colors
           ];
 
           # plugins loaded on demand by lze
@@ -38,6 +40,7 @@
               conform-nvim
               fzf-lua
               lspsaga-nvim
+              lualine-nvim
               nvim-lint
               nvim-lspconfig
               trouble-nvim
@@ -48,6 +51,7 @@
             deadnix
             fd
             fzf
+            git
             lua-language-server
             nixd
             nixfmt
