@@ -35,19 +35,25 @@
             lazy = true;
             data = with pkgs.vimPlugins; [
               blink-cmp
+              conform-nvim
               fzf-lua
               lspsaga-nvim
+              nvim-lint
               nvim-lspconfig
               trouble-nvim
             ];
           };
 
           config.runtimePkgs = with pkgs; [
+            deadnix
             fd
             fzf
             lua-language-server
             nixd
+            nixfmt
             ripgrep
+            statix
+            stylua
           ];
         };
       wrapper = wrappers.lib.evalModule module;

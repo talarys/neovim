@@ -3,7 +3,9 @@ return {
   -- before nvim-lspconfig starts any server
   { import = "plugins.blink" },
   { import = "lsp" },
+  { import = "plugins.conform" },
   { import = "plugins.fzf" },
+  { import = "plugins.lint" },
   { import = "plugins.lspsaga" },
   { import = "plugins.trouble" },
 }
