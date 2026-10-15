@@ -26,9 +26,28 @@
 
           config.specs.default = {
             data = with pkgs.vimPlugins; [
+              lze
               nvim-treesitter.withAllGrammars
             ];
           };
+
+          config.specs.lspconfig = {
+            lazy = true;
+            data = pkgs.vimPlugins.nvim-lspconfig;
+          };
+
+          config.specs.fzf-lua = {
+            lazy = true;
+            data = pkgs.vimPlugins.fzf-lua;
+          };
+
+          config.runtimePkgs = with pkgs; [
+            fd
+            fzf
+            lua-language-server
+            nixd
+            ripgrep
+          ];
         };
       wrapper = wrappers.lib.evalModule module;
     in
