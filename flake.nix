@@ -24,36 +24,22 @@
 
           config.settings.config_directory = ./.;
 
-          config.specs.default = {
+          # plugins that must be loaded at startup
+          config.specs.startup = with pkgs.vimPlugins; [
+            lze
+            nvim-treesitter.withAllGrammars
+          ];
+
+          # plugins loaded on demand by lze
+          config.specs.lazy = {
+            lazy = true;
             data = with pkgs.vimPlugins; [
-              lze
-              nvim-treesitter.withAllGrammars
+              blink-cmp
+              fzf-lua
+              lspsaga-nvim
+              nvim-lspconfig
+              trouble-nvim
             ];
-          };
-
-          config.specs.lspconfig = {
-            lazy = true;
-            data = pkgs.vimPlugins.nvim-lspconfig;
-          };
-
-          config.specs.blink-cmp = {
-            lazy = true;
-            data = pkgs.vimPlugins.blink-cmp;
-          };
-
-          config.specs.fzf-lua = {
-            lazy = true;
-            data = pkgs.vimPlugins.fzf-lua;
-          };
-
-          config.specs.lspsaga = {
-            lazy = true;
-            data = pkgs.vimPlugins.lspsaga-nvim;
-          };
-
-          config.specs.trouble = {
-            lazy = true;
-            data = pkgs.vimPlugins.trouble-nvim;
           };
 
           config.runtimePkgs = with pkgs; [
