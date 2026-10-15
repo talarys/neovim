@@ -41,6 +41,16 @@
             data = pkgs.vimPlugins.fzf-lua;
           };
 
+          config.specs.lspsaga = {
+            lazy = true;
+            data = pkgs.vimPlugins.lspsaga-nvim;
+          };
+
+          config.specs.trouble = {
+            lazy = true;
+            data = pkgs.vimPlugins.trouble-nvim;
+          };
+
           config.runtimePkgs = with pkgs; [
             fd
             fzf
