@@ -3,7 +3,6 @@ vim.g.maplocalleader = " "
 
 require("options")
 require("keymaps")
-require("lsp")
 require("diagnostics")
 
 -- lze lazy-loads the plugins declared with `lazy = true` in flake.nix.

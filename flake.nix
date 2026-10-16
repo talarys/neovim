@@ -26,27 +26,34 @@
 
           # plugins that must be loaded at startup
           config.specs.startup = with pkgs.vimPlugins; [
+            catppuccin-nvim
             gitsigns-nvim
             lze
             nvim-treesitter.withAllGrammars
+            plenary-nvim # library; harpoon2 requires it while being loaded
             snacks-nvim
-            vim-moonfly-colors
           ];
 
           # plugins loaded on demand by lze
           config.specs.lazy = {
             lazy = true;
             data = with pkgs.vimPlugins; [
+              auto-session
               blink-cmp
               bufferline-nvim
               conform-nvim
+              flash-nvim
+              harpoon2
+              lazygit-nvim
               lspsaga-nvim
               lualine-nvim
               noice-nvim
               nvim-lint
               nvim-lspconfig
               smart-splits-nvim
+              stay-centered-nvim
               trouble-nvim
+              which-key-nvim
             ];
           };
 
@@ -54,6 +61,7 @@
             deadnix
             fd
             git
+            lazygit
             lua-language-server
             nixd
             nixfmt

@@ -3,7 +3,9 @@ return {
     "bufferline.nvim",
     event = "DeferredUIEnter",
     after = function()
-      require("bufferline").setup({})
+      require("bufferline").setup({
+        highlights = require("catppuccin.special.bufferline").get_theme(),
+      })
 
       local map = vim.keymap.set
       map("n", "<leader>bp", "<cmd>BufferLinePick<CR>", { desc = "Buffer line pick" })

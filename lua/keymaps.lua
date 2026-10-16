@@ -20,6 +20,25 @@ map("n", "<leader>]q", ":cnext<CR>", { desc = "Quickfix next" })
 map("n", "<leader>[q", ":cprev<CR>", { desc = "Quickfix previous" })
 map("n", "<leader>cq", ":cclose<CR>", { desc = "Quickfix close" })
 
+-- Diff -------------------------------------------------------------------------
+local function toggle_diff()
+  local active = false
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    if vim.wo[win].diff then
+      active = true
+      break
+    end
+  end
+  vim.cmd(active and "windo diffoff!" or "windo diffthis")
+end
+
+map("n", "<leader>dd", toggle_diff, { desc = "Toggle diff on all windows" })
+
+-- Treesitter -------------------------------------------------------------------
+map("n", "<leader>vt", function()
+  require("treesitter").select_node()
+end, { desc = "Select treesitter node" })
+
 -- Buffers ---------------------------------------------------------------------
 map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
 map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
@@ -45,9 +64,8 @@ map("x", "<leader>P", '"_dP', { desc = "Paste over selection without clobbering"
 map("n", "<leader>ud", "<cmd>lua _G.toggle_diagnostics()<CR>", { desc = "Toggle diagnostics" })
 map("n", "<leader>ul", "<cmd>set number!<CR>", { desc = "Toggle line numbers" })
 map("n", "<leader>uL", "<cmd>set relativenumber!<CR>", { desc = "Toggle relative numbers" })
-map("n", "<leader>uh", "<cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>", {
-  desc = "Toggle inlay hints",
-})
+map("n", "<leader>uh", "<cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>",
+  { desc = "Toggle inlay hints", })
 map("n", "<leader>uT", "<cmd>lua vim.treesitter.stop()<CR>", { desc = "Toggle treesitter" })
 map("n", "<leader>us", "<cmd>set spell!<CR>", { desc = "Toggle spelling" })
 map("n", "<leader>uw", "<cmd>set wrap!<CR>", { desc = "Toggle wrap" })

@@ -1,8 +1,25 @@
 return {
   {
-    "vim-moonfly-colors",
+    -- set up at startup: it is the colorscheme
+    "catppuccin-nvim",
     after = function()
-      vim.cmd.colorscheme("moonfly")
+      require("catppuccin").setup({
+        flavour = "mocha",
+        transparent_background = true,
+        float = {
+          transparent = true,
+          solid = true,
+        },
+        integrations = {
+          snacks = { enabled = true },
+          noice = true,
+          harpoon = true,
+          lsp_saga = true,
+          lsp_trouble = true,
+          which_key = true,
+        },
+      })
+      vim.cmd.colorscheme("catppuccin")
     end,
   },
 }

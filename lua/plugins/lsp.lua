@@ -2,6 +2,20 @@ return {
   {
     "nvim-lspconfig",
     event = "FileType",
+    -- declared via lze `keys` so they exist before the first file is opened;
+    -- pressing one loads nvim-lspconfig and then runs the command
+    keys = {
+      { "<leader>li", "<cmd>checkhealth vim.lsp<CR>",                                           desc = "LSP info" },
+      { "<leader>ls", "<cmd>doautocmd FileType<CR>",                                            desc = "Start LSP" },
+      { "<leader>lq", "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end<CR>", desc = "Stop LSP" },
+      {
+        "<leader>lR",
+        "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end vim.cmd('doautocmd FileType')<CR>",
+        desc = "Restart LSP",
+      },
+      { "<leader>lL", "<cmd>lua _G.toggle_diagnostics()<CR>",  desc = "Toggle diagnostics" },
+      { "<leader>ll", "<cmd>lua _G.toggle_virtual_text()<CR>", desc = "Toggle virtual text" },
+    },
     after = function()
       vim.lsp.config("lua_ls", {
         settings = {
@@ -30,22 +44,6 @@ return {
           bufmap({ "i", "s" }, "<C-s>", vim.lsp.buf.signature_help, "Signature help")
         end,
       })
-
-      -- LSP controls
-      local map = vim.keymap.set
-      map("n", "<leader>li", "<cmd>checkhealth vim.lsp<CR>", { desc = "LSP info" })
-      map("n", "<leader>ls", "<cmd>doautocmd FileType<CR>", { desc = "Start LSP" })
-      map("n", "<leader>lq", "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end<CR>", {
-        desc = "Stop LSP",
-      })
-      map(
-        "n",
-        "<leader>lR",
-        "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end vim.cmd('doautocmd FileType')<CR>",
-        { desc = "Restart LSP" }
-      )
-      map("n", "<leader>lL", "<cmd>lua _G.toggle_diagnostics()<CR>", { desc = "Toggle diagnostics" })
-      map("n", "<leader>ll", "<cmd>lua _G.toggle_virtual_text()<CR>", { desc = "Toggle virtual text" })
 
       vim.lsp.enable({ "lua_ls", "nixd" })
     end,
