@@ -1,7 +1,7 @@
 -- Non-plugin keymaps only; plugin-specific binds live with their plugin spec.
 local map = vim.keymap.set
 
-map({ "n", "i", "v" }, "C-s", ":w<CR>", { desc = "Save file" })
+map({ "n", "i", "v" }, "<C-s>", ":w<CR>", { desc = "Save file" })
 map({ "n", "i", "v" }, "<leader>w", ":w<CR>", { desc = "Save file" })
 
 map("n", "<leader>qq", ":quitall!<CR>", { desc = "Quit all" })
