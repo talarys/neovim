@@ -81,13 +81,13 @@
             nixd
             nixfmt
             prettier
-            pyright
             python3
             ripgrep
             ruff
             rust-analyzer
             statix
             taplo
+            ty
             typescript-language-server
             vscode-langservers-extracted
             yamllint

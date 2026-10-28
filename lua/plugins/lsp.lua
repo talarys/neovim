@@ -32,14 +32,6 @@ return {
         },
       })
 
-      vim.lsp.config("pyright", {
-        settings = {
-          python = {
-            analysis = { typeCheckingMode = "standard" },
-          },
-        },
-      })
-
       vim.lsp.config("rust_analyzer", {
         settings = {
           ["rust-analyzer"] = {
@@ -89,7 +81,7 @@ return {
         "yamlls",
         "taplo",
         -- other languages
-        "pyright",
+        "ty",
         "ruff",
         "rust_analyzer",
       })
