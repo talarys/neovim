@@ -5,6 +5,11 @@ return {
     event = "DeferredUIEnter",
     after = function()
       require("which-key").setup({
+        preset = "helix",
+        icons = {
+          -- no plugin/file icons next to mappings
+          mappings = false,
+        },
         spec = {
           { "<leader>b", group = "buffers" },
           { "<leader>c", group = "change" },
