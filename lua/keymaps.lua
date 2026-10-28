@@ -16,9 +16,6 @@ map("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 -- General ---------------------------------------------------------------------
 map("n", "<leader>cf", ":set filetype=", { desc = "Change filetype" })
 map("n", "<leader>id", ":put =strftime('%Y-%m-%d')<CR>", { desc = "Insert date at cursor" })
-map("n", "]q", ":cnext<CR>", { desc = "Quickfix next" })
-map("n", "[q", ":cprev<CR>", { desc = "Quickfix previous" })
-
 -- Diff -------------------------------------------------------------------------
 local function toggle_diff()
   local active = false
@@ -43,8 +40,6 @@ map("n", "<S-h>", "<cmd>bprevious<CR>", { desc = "Previous buffer" })
 map("n", "<S-l>", "<cmd>bnext<CR>", { desc = "Next buffer" })
 
 -- Editing ---------------------------------------------------------------------
-map({ "n", "v" }, "<A-j>", ":m .+1<CR>==", { desc = "Move line down" })
-map({ "n", "v" }, "<A-k>", ":m .-2<CR>==", { desc = "Move line up" })
 map({ "n", "v" }, "<", "<gv", { desc = "Indent and keep the selection" })
 map({ "n", "v" }, ">", ">gv", { desc = "Outdent and keep the selection" })
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlight" })

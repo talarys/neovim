@@ -2,6 +2,7 @@ return {
   { import = "plugins.auto-session" },
   { import = "plugins.blink" },
   { import = "plugins.lsp" },
+  { import = "plugins.mini" },
   { import = "plugins.bufferline" },
   { import = "plugins.colorscheme" },
   { import = "plugins.conform" },
