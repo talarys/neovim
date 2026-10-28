@@ -92,8 +92,13 @@ return {
         "pyright",
         "ruff",
         "rust_analyzer",
-        "hls",
       })
+
+      -- HLS drags GHC into the closure, so it is system-provided. Only enable
+      -- it when the system actually has it.
+      if vim.fn.executable("haskell-language-server-wrapper") == 1 then
+        vim.lsp.enable("hls")
+      end
     end,
   },
 }

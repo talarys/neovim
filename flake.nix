@@ -24,6 +24,13 @@
 
           config.settings.config_directory = ./.;
 
+          # Remote plugin hosts pull full language runtimes into the closure.
+          # Runtimes are system-provided; disable the bundled hosts.
+          config.hosts.python3.nvim-host.enable = false;
+          config.hosts.ruby.nvim-host.enable = false;
+          config.hosts.perl.nvim-host.enable = false;
+          config.hosts.node.nvim-host.enable = false;
+
           # plugins that must be loaded at startup
           config.specs.startup = with pkgs.vimPlugins; [
             catppuccin-nvim
@@ -57,20 +64,17 @@
             ];
           };
 
+          # Only LSPs, formatters and linters belong here. Language runtimes
+          # and toolchains are provided by the system. HLS and rustfmt are also
+          # system-provided because their nix packages pull in GHC/rustc.
           config.runtimePkgs = map (p: {
             data = p;
             prefix = true;
           }) (with pkgs; [
-            cabal-install
-            cargo
-            clippy
             deadnix
             eslint
             fd
             fourmolu
-            ghc
-            git
-            haskell-language-server
             hlint
             lazygit
             lua-language-server
@@ -78,17 +82,13 @@
             nixfmt
             prettier
             pyright
-            python3
             ripgrep
             ruff
             rust-analyzer
-            rustc
-            rustfmt
             statix
             taplo
             typescript-language-server
             vscode-langservers-extracted
-            yamllint
             yaml-language-server
           ]);
         };
