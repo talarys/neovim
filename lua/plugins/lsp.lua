@@ -25,6 +25,12 @@ return {
         },
       })
 
+      -- lspsaga owns rename, code actions and type definitions. Remove Neovim's
+      -- built-in defaults for those so each action has exactly one implementation.
+      for _, lhs in ipairs({ "grn", "gra", "grt" }) do
+        pcall(vim.keymap.del, "n", lhs)
+      end
+
       -- LSP keymaps, declared explicitly instead of relying on Neovim's defaults
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(event)
@@ -32,16 +38,12 @@ return {
             vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
-          bufmap("n", "grn", vim.lsp.buf.rename, "Rename symbol")
-          bufmap({ "n", "x" }, "gra", vim.lsp.buf.code_action, "Code action")
+          -- rename, code actions and type definitions are handled by lspsaga
           bufmap("n", "grx", vim.lsp.codelens.run, "Run codelens")
           bufmap("n", "grr", vim.lsp.buf.references, "References")
           bufmap("n", "gri", vim.lsp.buf.implementation, "Implementation")
-          bufmap("n", "gI", vim.lsp.buf.implementation, "Goto implementation")
-          bufmap("n", "grt", vim.lsp.buf.type_definition, "Type definition")
           bufmap("n", "gO", vim.lsp.buf.document_symbol, "Document symbols")
           bufmap("n", "gD", vim.lsp.buf.declaration, "Declaration")
-          bufmap({ "i", "s" }, "<C-s>", vim.lsp.buf.signature_help, "Signature help")
         end,
       })
 

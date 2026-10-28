@@ -10,6 +10,7 @@ return {
       { "gpd", "<cmd>Lspsaga peek_definition<CR>", desc = "Peek definition" },
       { "gpt", "<cmd>Lspsaga peek_type_definition<CR>", desc = "Peek type definition" },
       { "K", "<cmd>Lspsaga hover_doc<CR>", desc = "Hover doc" },
+      { "<leader>lF", "<cmd>Lspsaga finder<CR>", desc = "Finder (definitions/references)" },
       { "<leader>la", "<cmd>Lspsaga code_action<CR>", desc = "Code action" },
       { "<leader>lr", "<cmd>Lspsaga rename ++project<CR>", desc = "Rename (project)" },
       { "<leader>lo", "<cmd>Lspsaga outline<CR>", desc = "Outline" },
