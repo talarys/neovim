@@ -6,7 +6,7 @@ return {
       -- "sidebar" preset, and the position is set through the picker source
       explorer = {
         layout = {
-          auto_hide = { "input" },
+          hidden = { "input" },
           layout = { position = "right" }
         },
       },
