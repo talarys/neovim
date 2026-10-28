@@ -1,21 +1,21 @@
 -- Non-plugin keymaps only; plugin-specific binds live with their plugin spec.
 local map = vim.keymap.set
 
-map({ "n", "i", "v" }, "<C-s>", ":w<CR>", { desc = "Save file" })
-map({ "n", "i", "v" }, "<leader>w", ":w<CR>", { desc = "Save file" })
+map({ "n", "i", "v" }, "<C-s>", "<Cmd>write<CR>", { desc = "Save file" })
+map({ "n", "i", "v" }, "<leader>w", "<Cmd>write<CR>", { desc = "Save file" })
 
-map("n", "<leader>qq", ":quitall!<CR>", { desc = "Quit all" })
+map("n", "<leader>qq", "<Cmd>quitall!<CR>", { desc = "Quit all" })
 map("n", "<leader>qw", "<C-w>c", { desc = "Close window" })
 
-map("n", "<leader>|", ":vsplit<CR>", { desc = "Vertical split" })
-map("n", "<leader>-", ":split<CR>", { desc = "Horizontal split" })
+map("n", "<leader>|", "<Cmd>vsplit<CR>", { desc = "Vertical split" })
+map("n", "<leader>-", "<Cmd>split<CR>", { desc = "Horizontal split" })
 
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 map("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 
 -- General ---------------------------------------------------------------------
 map("n", "<leader>cf", ":set filetype=", { desc = "Change filetype" })
-map("n", "<leader>id", ":put =strftime('%Y-%m-%d')<CR>", { desc = "Insert date at cursor" })
+map("n", "<leader>id", "<Cmd>put =strftime('%Y-%m-%d')<CR>", { desc = "Insert date at cursor" })
 -- Diff -------------------------------------------------------------------------
 local function toggle_diff()
   local active = false
