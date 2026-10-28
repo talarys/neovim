@@ -7,7 +7,7 @@ return {
       explorer = {
         layout = {
           auto_hide = { "input" },
-          layout = { position = "right" },
+          layout = { position = "right" }
         },
       },
     },

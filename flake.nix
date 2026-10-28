@@ -66,7 +66,6 @@
             nixfmt
             ripgrep
             statix
-            stylua
           ];
         };
       wrapper = wrappers.lib.evalModule module;

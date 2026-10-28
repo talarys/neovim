@@ -16,12 +16,12 @@ return {
     after = function()
       require("conform").setup({
         formatters_by_ft = {
-          lua = { "stylua" },
+          lua = { "lsp" },
           nix = { "nixfmt" },
         },
-        default_format_opts = { lsp_format = "fallback" },
+        default_format_opts = { lsp_format = "prefer" },
         format_on_save = {
-          lsp_format = "fallback",
+          lsp_format = "prefer",
           timeout_ms = 500,
         },
       })
