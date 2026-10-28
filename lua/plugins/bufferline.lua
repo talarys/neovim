@@ -15,8 +15,8 @@ return {
       map("n", "<leader>be", "<cmd>BufferLineSortByExtension<CR>", { desc = "Sort by extension" })
       map("n", "<leader>bH", "<cmd>BufferLineCloseLeft<CR>", { desc = "Close left buffers" })
       map("n", "<leader>bL", "<cmd>BufferLineCloseRight<CR>", { desc = "Close right buffers" })
-      map("n", "<leader>bl", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer left" })
-      map("n", "<leader>bh", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer right" })
+      map("n", "<leader>bl", "<cmd>BufferLineMoveNext<CR>", { desc = "Move buffer right" })
+      map("n", "<leader>bh", "<cmd>BufferLineMovePrev<CR>", { desc = "Move buffer left" })
     end,
   },
 }

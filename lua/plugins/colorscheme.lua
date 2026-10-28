@@ -15,7 +15,6 @@ return {
           noice = true,
           harpoon = true,
           lsp_saga = true,
-          lsp_trouble = true,
           which_key = true,
         },
       })

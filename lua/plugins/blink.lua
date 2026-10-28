@@ -38,6 +38,8 @@ return {
           },
         },
         signature = { enabled = true },
+        -- expand and navigate snippets through Neovim's built-in vim.snippet API
+        snippets = { preset = "default" },
       })
 
       vim.lsp.config("*", { capabilities = require("blink.cmp").get_lsp_capabilities() })

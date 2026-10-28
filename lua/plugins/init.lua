@@ -16,6 +16,5 @@ return {
   { import = "plugins.smart-splits" },
   { import = "plugins.snacks" },
   { import = "plugins.stay-centered" },
-  { import = "plugins.trouble" },
   { import = "plugins.which-key" },
 }

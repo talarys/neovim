@@ -52,7 +52,6 @@
               nvim-lspconfig
               smart-splits-nvim
               stay-centered-nvim
-              trouble-nvim
               which-key-nvim
             ];
           };
