@@ -32,6 +32,28 @@ return {
         },
       })
 
+      vim.lsp.config("pyright", {
+        settings = {
+          python = {
+            analysis = { typeCheckingMode = "standard" },
+          },
+        },
+      })
+
+      vim.lsp.config("rust_analyzer", {
+        settings = {
+          ["rust-analyzer"] = {
+            check = { command = "clippy" },
+          },
+        },
+      })
+
+      vim.lsp.config("hls", {
+        settings = {
+          haskell = { formattingProvider = "fourmolu" },
+        },
+      })
+
       -- lspsaga owns rename, code actions and type definitions. Remove Neovim's
       -- built-in defaults for those so each action has exactly one implementation.
       for _, lhs in ipairs({ "grn", "gra", "grt" }) do
@@ -54,7 +76,24 @@ return {
         end,
       })
 
-      vim.lsp.enable({ "lua_ls", "nixd" })
+      vim.lsp.enable({
+        -- core
+        "lua_ls",
+        "nixd",
+        -- web and data
+        "ts_ls",
+        "eslint",
+        "jsonls",
+        "cssls",
+        "html",
+        "yamlls",
+        "taplo",
+        -- other languages
+        "pyright",
+        "ruff",
+        "rust_analyzer",
+        "hls",
+      })
     end,
   },
 }

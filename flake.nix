@@ -56,17 +56,40 @@
             ];
           };
 
-          config.runtimePkgs = with pkgs; [
+          config.runtimePkgs = map (p: {
+            data = p;
+            prefix = true;
+          }) (with pkgs; [
+            cabal-install
+            cargo
+            clippy
             deadnix
+            eslint
             fd
+            fourmolu
+            ghc
             git
+            haskell-language-server
+            hlint
             lazygit
             lua-language-server
             nixd
             nixfmt
+            prettier
+            pyright
+            python3
             ripgrep
+            ruff
+            rust-analyzer
+            rustc
+            rustfmt
             statix
-          ];
+            taplo
+            typescript-language-server
+            vscode-langservers-extracted
+            yamllint
+            yaml-language-server
+          ]);
         };
       wrapper = wrappers.lib.evalModule module;
     in
