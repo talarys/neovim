@@ -82,6 +82,7 @@
             nixfmt
             prettier
             pyright
+            python3
             ripgrep
             ruff
             rust-analyzer
@@ -89,6 +90,7 @@
             taplo
             typescript-language-server
             vscode-langservers-extracted
+            yamllint
             yaml-language-server
           ]);
         };
