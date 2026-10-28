@@ -41,9 +41,10 @@ opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" } -- how to render the
 opt.fillchars = { eob = " " } -- hide the ~ on empty lines
 
 -- Windows ---------------------------------------------------------------------
-opt.splitright = true -- vertical splits open to the right
-opt.splitbelow = true -- horizontal splits open below
-opt.mouse = "a"       -- enable the mouse in all modes
+opt.splitright = true     -- vertical splits open to the right
+opt.splitbelow = true     -- horizontal splits open below
+opt.mouse = "a"           -- enable the mouse in all modes
+opt.winborder = "rounded" -- rounded borders for floating windows
 
 -- Completion / responsiveness -------------------------------------------------
 opt.completeopt = "menu,menuone,noselect" -- never auto-insert a completion
