@@ -1,7 +1,18 @@
 -- One spec for the whole plugin: lze drops duplicate specs for the same plugin
 -- name, and Snacks.setup() errors when called twice. The per-feature configs
 -- and keymaps live in the modules next to this file.
-local features = { "picker", "explorer", "scratch", "rename", "notifier", "dashboard" }
+local features = {
+  "picker",
+  "explorer",
+  "scratch",
+  "rename",
+  "notifier",
+  "dashboard",
+  "animate",
+  "scroll",
+  "indent",
+  "dim",
+}
 
 return {
   {
