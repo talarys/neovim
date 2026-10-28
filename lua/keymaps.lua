@@ -76,8 +76,12 @@ end
 map("n", "<leader>ud", "<cmd>lua _G.toggle_diagnostics()<CR>", { desc = "Toggle diagnostics" })
 map("n", "<leader>ul", "<cmd>set number!<CR>", { desc = "Toggle line numbers" })
 map("n", "<leader>uL", "<cmd>set relativenumber!<CR>", { desc = "Toggle relative numbers" })
-map("n", "<leader>uh", "<cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>",
-  { desc = "Toggle inlay hints", })
+map(
+  "n",
+  "<leader>uh",
+  "<cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>",
+  { desc = "Toggle inlay hints" }
+)
 map("n", "<leader>uT", toggle_treesitter, { desc = "Toggle treesitter" })
 map("n", "<leader>us", "<cmd>set spell!<CR>", { desc = "Toggle spelling" })
 map("n", "<leader>uw", "<cmd>set wrap!<CR>", { desc = "Toggle wrap" })
