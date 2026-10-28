@@ -5,7 +5,10 @@ return {
     event = "DeferredUIEnter",
     after = function()
       require("lualine").setup({
-        options = { theme = "auto" },
+        options = {
+          theme = "auto",
+          globalstatus = true,
+        },
       })
     end,
   },

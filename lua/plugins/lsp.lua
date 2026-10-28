@@ -2,8 +2,6 @@ return {
   {
     "nvim-lspconfig",
     event = "FileType",
-    -- declared via lze `keys` so they exist before the first file is opened;
-    -- pressing one loads nvim-lspconfig and then runs the command
     keys = {
       { "<leader>li", "<cmd>checkhealth vim.lsp<CR>",                                           desc = "LSP info" },
       { "<leader>ls", "<cmd>doautocmd FileType<CR>",                                            desc = "Start LSP" },
