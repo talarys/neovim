@@ -12,6 +12,7 @@ local features = {
   "scroll",
   "indent",
   "dim",
+  "statuscolumn",
 }
 
 return {
