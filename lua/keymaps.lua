@@ -48,7 +48,7 @@ map("n", "<C-u>", "<C-u>zz", { desc = "Half page up, cursor centred" })
 map("n", "n", "nzzzv", { desc = "Next match, cursor centred" })
 map("n", "N", "Nzzzv", { desc = "Previous match, cursor centred" })
 
--- Clipboard (keeps the unnamed register free) ---------------------------------
+-- Clipboard (explicit + register access) -------------------------------------
 map({ "n", "v", "x" }, "<leader>y", '"+y', { desc = "Yank to system clipboard" })
 map({ "n", "v", "x" }, "<leader>Y", '"+Y', { desc = "Yank line to system clipboard" })
 map({ "n", "v", "x" }, "<leader>p", '"+p', { desc = "Paste from system clipboard" })

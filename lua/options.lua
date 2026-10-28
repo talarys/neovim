@@ -9,6 +9,9 @@ opt.softtabstop = 2                         -- <Tab> inserts 2 spaces
 opt.smartindent = true                      -- indent new lines based on syntax
 opt.formatoptions:remove({ "c", "r", "o" }) -- don't continue comments on <CR>
 
+-- Clipboard -------------------------------------------------------------------
+opt.clipboard = "unnamedplus" -- yank/paste through the system clipboard
+
 -- Files -----------------------------------------------------------------------
 opt.undofile = true  -- keep undo history between sessions
 opt.swapfile = false -- no swap files (undo + git are enough)

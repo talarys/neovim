@@ -1,6 +1,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+require("clipboard").setup()
 require("options")
 require("keymaps")
 require("diagnostics")
