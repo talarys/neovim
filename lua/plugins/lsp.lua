@@ -13,8 +13,7 @@ return {
         "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end vim.cmd('doautocmd FileType')<CR>",
         desc = "Restart LSP",
       },
-      { "<leader>lL", "<cmd>lua _G.toggle_diagnostics()<CR>",  desc = "Toggle diagnostics" },
-      { "<leader>ll", "<cmd>lua _G.toggle_virtual_text()<CR>", desc = "Toggle virtual text" },
+      { "<leader>uv", "<cmd>lua _G.toggle_virtual_text()<CR>", desc = "Toggle diagnostic virtual text" },
     },
     after = function()
       vim.lsp.config("lua_ls", {

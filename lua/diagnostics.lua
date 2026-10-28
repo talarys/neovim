@@ -11,7 +11,7 @@ vim.diagnostic.config({
   jump = { float = true },
 })
 
--- used by the <leader>ud / <leader>lL / <leader>ll keymaps
+-- used by the <leader>ud / <leader>uv keymaps
 function _G.toggle_diagnostics()
   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end

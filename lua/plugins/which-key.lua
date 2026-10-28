@@ -4,7 +4,20 @@ return {
     "which-key.nvim",
     event = "DeferredUIEnter",
     after = function()
-      require("which-key").setup({})
+      require("which-key").setup({
+        spec = {
+          { "<leader>b", group = "buffers" },
+          { "<leader>c", group = "change" },
+          { "<leader>g", group = "git" },
+          { "<leader>l", group = "lsp" },
+          { "<leader>q", group = "quit/session" },
+          { "<leader>s", group = "search" },
+          { "<leader>u", group = "ui/toggles" },
+          { "<leader>v", group = "treesitter" },
+          { "<leader>w", group = "write" },
+          { "<leader>.", group = "scratch/rename" },
+        },
+      })
 
       -- which-key's recommended keybind: show the keymaps of the current buffer
       vim.keymap.set("n", "<leader>k", function()

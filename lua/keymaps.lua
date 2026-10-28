@@ -14,11 +14,10 @@ map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 map("i", "jj", "<Esc>", { desc = "Exit insert mode" })
 
 -- General ---------------------------------------------------------------------
-map("n", "<leader>ft", ":set filetype=", { desc = "Set filetype" })
+map("n", "<leader>cf", ":set filetype=", { desc = "Change filetype" })
 map("n", "<leader>id", ":put =strftime('%Y-%m-%d')<CR>", { desc = "Insert date at cursor" })
-map("n", "<leader>]q", ":cnext<CR>", { desc = "Quickfix next" })
-map("n", "<leader>[q", ":cprev<CR>", { desc = "Quickfix previous" })
-map("n", "<leader>cq", ":cclose<CR>", { desc = "Quickfix close" })
+map("n", "]q", ":cnext<CR>", { desc = "Quickfix next" })
+map("n", "[q", ":cprev<CR>", { desc = "Quickfix previous" })
 
 -- Diff -------------------------------------------------------------------------
 local function toggle_diff()
@@ -32,7 +31,7 @@ local function toggle_diff()
   vim.cmd(active and "windo diffoff!" or "windo diffthis")
 end
 
-map("n", "<leader>dd", toggle_diff, { desc = "Toggle diff on all windows" })
+map("n", "<leader>gd", toggle_diff, { desc = "Toggle diff on all windows" })
 
 -- Treesitter -------------------------------------------------------------------
 map("n", "<leader>vt", function()
@@ -61,15 +60,28 @@ map({ "n", "v", "x" }, "<leader>p", '"+p', { desc = "Paste from system clipboard
 map("x", "<leader>P", '"_dP', { desc = "Paste over selection without clobbering" })
 
 -- UI toggles ------------------------------------------------------------------
+local function toggle_conceal()
+  vim.wo.conceallevel = vim.wo.conceallevel == 0 and 2 or 0
+end
+
+local function toggle_treesitter()
+  local buf = vim.api.nvim_get_current_buf()
+  if vim.treesitter.highlighter.active[buf] then
+    vim.treesitter.stop(buf)
+  else
+    pcall(vim.treesitter.start, buf)
+  end
+end
+
 map("n", "<leader>ud", "<cmd>lua _G.toggle_diagnostics()<CR>", { desc = "Toggle diagnostics" })
 map("n", "<leader>ul", "<cmd>set number!<CR>", { desc = "Toggle line numbers" })
 map("n", "<leader>uL", "<cmd>set relativenumber!<CR>", { desc = "Toggle relative numbers" })
 map("n", "<leader>uh", "<cmd>lua vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())<CR>",
   { desc = "Toggle inlay hints", })
-map("n", "<leader>uT", "<cmd>lua vim.treesitter.stop()<CR>", { desc = "Toggle treesitter" })
+map("n", "<leader>uT", toggle_treesitter, { desc = "Toggle treesitter" })
 map("n", "<leader>us", "<cmd>set spell!<CR>", { desc = "Toggle spelling" })
 map("n", "<leader>uw", "<cmd>set wrap!<CR>", { desc = "Toggle wrap" })
-map("n", "<leader>uc", "<cmd>set conceallevel=0<CR>", { desc = "Toggle conceal level" })
+map("n", "<leader>uc", toggle_conceal, { desc = "Toggle conceal level" })
 
 -- Terminal --------------------------------------------------------------------
 map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
