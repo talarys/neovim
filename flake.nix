@@ -71,14 +71,13 @@
             data = p;
             prefix = true;
           }) (with pkgs; [
-            deadnix
             eslint
             fd
             fourmolu
             hlint
             lazygit
             lua-language-server
-            nixd
+            nil
             nixfmt
             prettier
             python3

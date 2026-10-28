@@ -30,6 +30,7 @@ return {
         },
       })
 
+
       vim.lsp.config("rust_analyzer", {
         settings = {
           ["rust-analyzer"] = {
@@ -69,7 +70,7 @@ return {
       vim.lsp.enable({
         -- core
         "lua_ls",
-        "nixd",
+        "nil_ls",
         -- web and data
         "ts_ls",
         "eslint",
