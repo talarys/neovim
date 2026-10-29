@@ -1,5 +1,6 @@
 local MiniIcons = require("mini.icons")
 
+local heirline_utils = require("heirline.utils")
 local theme = require("plugins.heirline.theme")
 local utils = require("plugins.heirline.utils")
 
@@ -129,7 +130,7 @@ local right_trunc = {
   hl = { fg = p.overlay0 },
 }
 
-M.tabline = utils.make_buflist(Buffer, left_trunc, right_trunc, listed_buffers, false)
+M.tabline = heirline_utils.make_buflist(Buffer, left_trunc, right_trunc, listed_buffers, false)
 
 function M.setup_keys()
   local map = vim.keymap.set
