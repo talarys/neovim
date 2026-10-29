@@ -37,15 +37,19 @@ return {
         callback = theme.setup,
       })
 
+      local tabline = require("plugins.heirline.tabline")
       require("heirline").setup({
         statusline = require("plugins.heirline.statusline"),
         winbar = require("plugins.heirline.winbar"),
+        tabline = tabline.tabline,
         opts = {
           disable_winbar_cb = function(args)
             return require("plugins.heirline.utils").is_special(args.buf)
           end,
         },
       })
+      tabline.setup_keys()
+      vim.o.showtabline = 2
     end,
   },
 }

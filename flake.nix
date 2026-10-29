@@ -47,7 +47,6 @@
             data = with pkgs.vimPlugins; [
               auto-session
               blink-cmp
-              bufferline-nvim
               conform-nvim
               flash-nvim
               harpoon2

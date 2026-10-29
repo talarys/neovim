@@ -8,6 +8,10 @@ function M.setup()
   set(0, "WinBar", { fg = palette.text, bg = "NONE" })
   set(0, "WinBarNC", { fg = palette.overlay1, bg = "NONE" })
 
+  set(0, "TabLineFill", { bg = "NONE" })
+  set(0, "TabLine", { fg = palette.overlay1, bg = "NONE" })
+  set(0, "TabLineSel", { fg = palette.text, bg = "NONE", bold = true })
+
   set(0, "HeirlineWinbarCrumb", { fg = palette.subtext1, bg = "NONE" })
   set(0, "HeirlineWinbarCrumbCurrent", { fg = palette.text, bg = "NONE", bold = true })
   set(0, "HeirlineWinbarSep", { fg = palette.overlay0, bg = "NONE" })
