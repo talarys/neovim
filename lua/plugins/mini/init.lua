@@ -13,6 +13,7 @@ local modules = {
 return {
   {
     "mini.nvim",
+    dep_of = "heirline.nvim",
     event = "DeferredUIEnter",
     after = function()
       for _, name in ipairs(modules) do
