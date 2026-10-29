@@ -33,7 +33,7 @@
 
           # plugins that must be loaded at startup
           config.specs.startup = with pkgs.vimPlugins; [
-            catppuccin-nvim
+            oxocarbon-nvim
             gitsigns-nvim
             lze
             nvim-treesitter.withAllGrammars
@@ -51,6 +51,7 @@
               conform-nvim
               flash-nvim
               harpoon2
+              heirline-nvim
               lazygit-nvim
               lspsaga-nvim
               lualine-nvim
@@ -58,6 +59,7 @@
               noice-nvim
               nvim-lint
               nvim-lspconfig
+              nvim-navic
               smart-splits-nvim
               stay-centered-nvim
               which-key-nvim

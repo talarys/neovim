@@ -20,7 +20,9 @@ return {
       { "]e",         "<cmd>Lspsaga diagnostic_jump_next<CR>",       desc = "Next diagnostic" },
     },
     after = function()
-      require("lspsaga").setup({})
+      require("lspsaga").setup({
+        symbol_in_winbar = { enable = false },
+      })
     end,
   },
 }
