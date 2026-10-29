@@ -1,6 +1,7 @@
 return {
   { import = "plugins.auto-session" },
   { import = "plugins.blink" },
+  { import = "plugins.friendly-snippets" },
   { import = "plugins.lsp" },
   { import = "plugins.mini" },
   { import = "plugins.heirline" },
@@ -11,10 +12,12 @@ return {
   { import = "plugins.harpoon" },
   { import = "plugins.lazygit" },
   { import = "plugins.lint" },
+  { import = "plugins.schemastore" },
   { import = "plugins.lspsaga" },
   { import = "plugins.noice" },
   { import = "plugins.smart-splits" },
   { import = "plugins.snacks" },
   { import = "plugins.stay-centered" },
+  { import = "plugins.treesitter-textobjects" },
   { import = "plugins.which-key" },
 }

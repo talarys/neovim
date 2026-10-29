@@ -30,6 +30,34 @@ return {
         },
       })
 
+      vim.lsp.config("nil_ls", {
+        settings = {
+          ["nil"] = {
+            formatting = { command = { "nixfmt" } },
+          },
+        },
+      })
+
+      vim.lsp.config("jsonls", {
+        settings = {
+          json = {
+            schemas = require("schemastore").json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      })
+
+      vim.lsp.config("yamlls", {
+        settings = {
+          yaml = {
+            schemaStore = {
+              enable = false,
+              url = "",
+            },
+            schemas = require("schemastore").yaml.schemas(),
+          },
+        },
+      })
 
       vim.lsp.config("rust_analyzer", {
         settings = {

@@ -49,6 +49,7 @@
               blink-cmp
               conform-nvim
               flash-nvim
+              friendly-snippets
               harpoon2
               heirline-nvim
               lazygit-nvim
@@ -58,9 +59,11 @@
               nvim-lint
               nvim-lspconfig
               nvim-navic
+              nvim-treesitter-textobjects
               smart-splits-nvim
               stay-centered-nvim
               which-key-nvim
+              SchemaStore-nvim
             ];
           };
 
