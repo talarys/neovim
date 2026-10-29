@@ -51,6 +51,7 @@
               conform-nvim
               flash-nvim
               harpoon2
+              heirline-nvim
               lazygit-nvim
               lspsaga-nvim
               lualine-nvim
@@ -58,6 +59,7 @@
               noice-nvim
               nvim-lint
               nvim-lspconfig
+              nvim-navic
               smart-splits-nvim
               stay-centered-nvim
               which-key-nvim
