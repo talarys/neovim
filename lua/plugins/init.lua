@@ -13,7 +13,6 @@ return {
   { import = "plugins.lazygit" },
   { import = "plugins.lint" },
   { import = "plugins.lspsaga" },
-  { import = "plugins.lualine" },
   { import = "plugins.noice" },
   { import = "plugins.smart-splits" },
   { import = "plugins.snacks" },

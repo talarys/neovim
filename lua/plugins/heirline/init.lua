@@ -38,6 +38,7 @@ return {
       })
 
       require("heirline").setup({
+        statusline = require("plugins.heirline.statusline"),
         winbar = require("plugins.heirline.winbar"),
         opts = {
           disable_winbar_cb = function(args)

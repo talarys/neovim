@@ -54,7 +54,6 @@
               heirline-nvim
               lazygit-nvim
               lspsaga-nvim
-              lualine-nvim
               mini-nvim
               noice-nvim
               nvim-lint
