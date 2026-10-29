@@ -3,7 +3,6 @@ return {
   { import = "plugins.blink" },
   { import = "plugins.lsp" },
   { import = "plugins.mini" },
-  { import = "plugins.heirline" },
   { import = "plugins.bufferline" },
   { import = "plugins.colorscheme" },
   { import = "plugins.conform" },
