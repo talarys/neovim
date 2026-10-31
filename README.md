@@ -1,89 +1,178 @@
-# Neovim module
+# Neovim
 
-This is a demonstration of the [neovim module](https://nix-community.github.io/nix-wrapper-modules/wrapperModules/neovim.html)
-
-It makes use of the tips in the [tips and tricks](https://nix-community.github.io/nix-wrapper-modules/wrapperModules/neovim.html#tips-and-tricks) section of the documentation.
-
-This template configuration is by no means a perfect, complete configuration.
-
-However, it is plenty to start on, and covers some interesting ways to use the module (and how to lazily load plugins and config).
-
-This configuration is 1 `lua` file, however the whole set of directories from a normal `neovim` configuration directory are available.
-
-To see what directories you can put stuff in, see: [:help 'rtp'](https://neovim.io/doc/user/options.html#'rtp')
-
-The main reason it is in 1 file is that it is following the style of [kickstart.nvim](https://github.com/nvim-lua/kickstart.nvim).
-
-The other reason it is in 1 file, is that it makes it a cleaner experience to init this template into an existing configuration.
-
-This template config uses [lze](https://github.com/BirdeeHub/lze) for lazy loading of the configuration.
-
-You may also be interested in [lz.n](https://github.com/lumen-oss/lz.n) for this purpose.
-
-Both achieve the same general result and main interface,
-but have different underlying implementations and thus have different handler features.
-
-Both are fantastic for lazy loading with both nix and the builtin plugin manager.
-
-You may also decide you don't need lazy loading at all. This is fine, many plugins mostly handle that themselves.
-
-To initialize this template flake into the current directory, run:
-
-```bash
-nix flake init -t github:nix-community/nix-wrapper-modules#neovim
-```
-
-It will not replace existing files.
-
-If you are using `zsh` you may need to escape the `#`
-
-To build it from that directory
+Personal Neovim configuration built with
+[nix-wrapper-modules](https://github.com/nix-community/nix-wrapper-modules)
+and lazily loaded with [lze](https://github.com/BirdeeHub/lze).
 
 ```bash
 nix build .
+./result/bin/nvim
 ```
 
-It exports a package! (and other things)
+Language runtimes are system-provided. The flake ships LSPs, formatters,
+linters and CLI tools.
 
-If you don't want your config in a separate flake, just call the `module.nix` file like:
+## Plugins
 
-```nix
-inputs: # <-- get the library somehow
-{ pkgs, ... }: {
-  # call the module and install the package (nixos example)
-  environment.systemPackages = [ (inputs.nix-wrapper-modules.lib.evalPackage [ ./module.nix { inherit pkgs; } ]) ];
-}
-```
+| Plugin | Purpose |
+| --- | --- |
+| `catppuccin-nvim` | Colorscheme (mocha, transparent) |
+| `heirline-nvim` | Statusline, winbar and tabline |
+| `nvim-navic` | Winbar breadcrumb data |
+| `mini-nvim` | `ai`, `move`, `pairs`, `splitjoin`, `surround`, `bracketed`, `icons` |
+| `snacks-nvim` | Picker, explorer, scratch, rename, notifier, dashboard, animation |
+| `blink-cmp` | Completion |
+| `friendly-snippets` | Snippet collection for Blink |
+| `nvim-lspconfig` | LSP client configuration |
+| `lspsaga-nvim` | Primary LSP UI: finder, peek, rename, code actions, outline |
+| `conform-nvim` | Format on save and manual formatting |
+| `nvim-lint` | `statix` for Nix, `yamllint` for YAML |
+| `nvim-treesitter` | Parsing, highlighting, folds |
+| `nvim-treesitter-textobjects` | Function/class/parameter text objects and motions |
+| `SchemaStore-nvim` | JSON and YAML schemas |
+| `gitsigns-nvim` | Hunk signs, staging, blame, word diff |
+| `lazygit-nvim` | LazyGit integration |
+| `harpoon2` | Pinned working files |
+| `flash-nvim` | Search/jump motions |
+| `noice-nvim` | Command line and message UI |
+| `smart-splits-nvim` | Window navigation |
+| `stay-centered-nvim` | Keeps cursor centered while scrolling |
+| `which-key-nvim` | Keymap discovery |
+| `auto-session` | Session save/restore |
+| `lze` | Lazy loading |
 
-There are a lot of other ways to install it as well, see [the getting started documentation](https://nix-community.github.io/nix-wrapper-modules/md/getting-started.html)
+### Languages
 
-You may also wish to view the `flake.nix` of this template, as it demonstrates some of those things when setting up its outputs.
+- Lua: `lua_ls`
+- Nix: `nil_ls`, `nixfmt`, `statix`
+- JS/TS: `ts_ls`, `eslint`, `prettier`
+- JSON/YAML/TOML: `jsonls`, `yamlls`, `taplo`
+- CSS/HTML: `cssls`, `html`
+- Python: `ty`, `ruff`, `ruff_format`
+- Rust: `rust_analyzer`, `rustfmt`
+- Haskell: `hls`, `fourmolu`, `hlint` when available
+- Generic: `yamllint`, SchemaStore schemas
 
----
+## Keymaps
 
-The nix in this template is not as simple as it could possibly be, as it demonstrates some things
-from the [tips and tricks](https://nix-community.github.io/nix-wrapper-modules/wrapperModules/neovim.html#tips-and-tricks) section of the documentation.
+Leader is `Space`. `?` is Flash search.
 
-If you wanted as simple as possible, you could use something more like the following as your `module.nix`
+### General
 
-```nix
-{ wlib, config, pkgs, lib, ... }:
-  imports = [ wlib.wrapperModules.neovim ];
-  specs.general = with pkgs.vimPlugins; [
-    # plugins which are loaded at startup ...
-  ];
-  specs.lazy = {
-    lazy = true;
-    data = with pkgs.vimPlugins; [
-      # plugins which are not loaded until you vim.cmd.packadd them ...
-    ];
-  };
-  runtimePkgs = with pkgs; [
-    # lsps, formatters, etc...
-  ];
-  settings.config_directory = ./.; # or lib.generators.mkLuaInline "vim.fn.stdpath('config')";
-}
-```
+| Key | Action |
+| --- | --- |
+| `<C-s>` / `<leader>w` | Save |
+| `<leader>qq` / `<leader>qw` | Quit all / close window |
+| `<leader>\|` / `<leader>-` | Vertical / horizontal split |
+| `jk` / `jj` | Exit insert mode |
+| `<leader>cf` | Change filetype |
+| `<leader>id` | Insert current date |
+| `<leader>gd` | Toggle diff on all windows |
+| `<leader>vt` | Select treesitter node |
+| `<leader>k` | Show keymaps |
+| `<Esc>` | Clear search highlight |
+| `<C-d>` / `<C-u>` | Half page down/up, centered |
+| `n` / `N` | Next/previous match, centered |
+| `<leader>y` / `<leader>Y` | Yank / yank line to system clipboard |
+| `<leader>p` / `<leader>P` | Paste / paste over selection |
+| `<Esc><Esc>` (terminal) | Exit terminal mode |
 
-At the same time, you may find that the `module.nix` file from this template is not massively more complex than that either,
-and contains some useful tricks and information.
+### Buffers and files
+
+| Key | Action |
+| --- | --- |
+| `<S-h>` / `<S-l>` | Previous / next buffer |
+| `<leader>bp` | Snacks buffer picker |
+| `<leader>bc` | Close other buffers |
+| `<leader>bh` / `<leader>bl` | Move buffer left / right |
+| `<leader>e` | Toggle explorer |
+| `<leader>..` / `<leader>.s` | Toggle / select scratch buffer |
+| `<leader>.r` | Rename file (LSP-aware) |
+| `<leader>ba` / `<leader>bb` | Harpoon add / menu |
+| `<leader>b1`–`<leader>b4` | Harpoon slots 1–4 |
+| `<leader>bj` / `<leader>bk` / `<leader>br` | Harpoon next / previous / remove |
+
+### Search and pickers
+
+| Key | Action |
+| --- | --- |
+| `<leader><leader>` | Smart find |
+| `<leader>sf` / `sr` / `sp` / `s,` | Files / recent / projects / buffers |
+| `<leader>sg` / `s?` / `sw` / `sB` / `sb` | Grep / fixed strings / word or selection / open buffers / buffer lines |
+| `<leader>ss` / `sS` | LSP symbols / workspace symbols |
+| `<leader>sd` / `sD` | Diagnostics / buffer diagnostics |
+| `<leader>sq` / `sl` / `sR` | Quickfix / location list / resume |
+| `<leader>sc` / `s:` / `sC` | Command history / command history / commands |
+| `<leader>s"` / `sa` / `sH` / `si` | Registers / autocmds / highlights / icons |
+| `<leader>sj` / `sm` / `sM` | Jumps / marks / man pages |
+| `<leader>su` / `st` / `sT` | Undo / todo comments / TODO-FIX-FIXME |
+| `<leader>sP` / `sh` / `sk` / `sn` | All pickers / help / keymaps / notifications |
+
+Inside a Snacks picker:
+
+| Key | Action |
+| --- | --- |
+| `<C-d>` / `<C-u>` | Preview scroll down / up |
+| `-` / `\|` | Open in horizontal / vertical split |
+| `<Enter>` | Open in window |
+
+### LSP
+
+| Key | Action |
+| --- | --- |
+| `gd` / `gpd` / `gpt` | Definition / peek definition / peek type definition |
+| `K` | Hover documentation |
+| `grx` / `grr` / `gri` / `gO` / `gD` | Codelens / references / implementation / document symbols / declaration |
+| `<leader>lF` | Lspsaga finder |
+| `<leader>lt` | Goto type definition |
+| `<leader>la` / `<leader>lr` | Code action / project rename |
+| `<leader>lo` / `<leader>ld` / `<leader>lw` | Outline / line diagnostics / workspace diagnostics |
+| `[e` / `]e` | Previous / next diagnostic |
+| `<leader>lD` / `lC` / `lI` / `lT` | Definitions / declarations / implementations / type definitions list |
+| `<leader>lf` | Format |
+| `<leader>li` / `ls` / `lq` / `lR` | LSP info / start / stop / restart |
+| `<leader>uv` | Toggle diagnostic virtual text |
+
+### Git
+
+| Key | Action |
+| --- | --- |
+| `]h` / `[h` / `]H` / `[H` | Next / previous / last / first hunk |
+| `<leader>gs` / `gr` / `gu` | Stage / reset / undo stage hunk |
+| `<leader>gp` / `gP` | Preview hunk inline / popup |
+| `<leader>gk` / `gK` / `gb` | Blame line / file / toggle line blame |
+| `<leader>gw` / `gB` | Word diff / browse |
+| `ih` | Select hunk |
+| `<leader>gg` / `gl` / `gf` | LazyGit / log / current file history |
+
+### Text objects and editing
+
+| Key | Action |
+| --- | --- |
+| `?` | Flash search |
+| `aF` / `iF` | Function outer / inner |
+| `aC` / `iC` | Class outer / inner |
+| `aP` / `iP` | Parameter outer / inner |
+| `]F` / `[F` | Next / previous function |
+| `]C` / `[C` | Next / previous class |
+| `]P` / `[P` | Next / previous parameter |
+| `<M-h>` / `<M-j>` / `<M-k>` / `<M-l>` | Move line/selection |
+| `<` / `>` | Indent/outdent and keep selection |
+
+### UI toggles
+
+| Key | Action |
+| --- | --- |
+| `<leader>ud` / `<leader>uv` | Diagnostics / virtual text |
+| `<leader>ul` / `<leader>uL` | Line numbers / relative numbers |
+| `<leader>uh` / `<leader>uT` | Inlay hints / treesitter |
+| `<leader>us` / `<leader>uw` / `<leader>uc` | Spelling / wrap / conceal |
+| `<leader>uD` / `<leader>un` | Dim / dismiss notifications |
+
+### Sessions
+
+| Key | Action |
+| --- | --- |
+| `<leader>q.` | Restore last session |
+| `<leader>ql` / `<leader>qd` | List / delete session |
+| `<leader>qs` / `<leader>qD` | Save / purge orphaned sessions |
