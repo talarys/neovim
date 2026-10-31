@@ -10,6 +10,7 @@ return {
           -- no plugin/file icons next to mappings
           mappings = false,
         },
+        win = { title = false },
         spec = {
           { "<leader>b", group = "buffers" },
           { "<leader>c", group = "change" },
@@ -19,13 +20,17 @@ return {
           { "<leader>s", group = "search" },
           { "<leader>u", group = "ui/toggles" },
           { "<leader>v", group = "treesitter" },
-          { "<leader>w", group = "write" },
           { "<leader>.", group = "scratch/rename" },
+          { "<leader>i", group = "insert" },
+          { "<leader>p", hidden = true },
+          { "<leader>w", hidden = true },
+          { "<leader>y", hidden = true },
+          { "<leader>Y", hidden = true },
         },
       })
 
       -- which-key's recommended keybind: show the keymaps of the current buffer
-      vim.keymap.set("n", "<leader>k", function()
+      vim.keymap.set("n", "<leader>?", function()
         require("which-key").show({ global = false })
       end, { desc = "Show keymaps" })
     end,
