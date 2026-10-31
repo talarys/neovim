@@ -7,6 +7,7 @@ return {
   { import = "plugins.heirline" },
   { import = "plugins.colorscheme" },
   { import = "plugins.conform" },
+  { import = "plugins.diffview" },
   { import = "plugins.flash" },
   { import = "plugins.gitsigns" },
   { import = "plugins.harpoon" },

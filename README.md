@@ -31,6 +31,7 @@ linters and CLI tools.
 | `nvim-treesitter-textobjects` | Function/class/parameter text objects and motions |
 | `SchemaStore-nvim` | JSON and YAML schemas |
 | `gitsigns-nvim` | Hunk signs, staging, blame, word diff |
+| `diffview-nvim` | Side-by-side diffs and file history |
 | `lazygit-nvim` | LazyGit integration |
 | `harpoon2` | Pinned working files |
 | `flash-nvim` | Search/jump motions |
@@ -144,6 +145,19 @@ Inside a Snacks picker:
 | `<leader>gw` / `gB` | Word diff / browse |
 | `ih` | Select hunk |
 | `<leader>gg` / `gl` / `gf` | LazyGit / log / current file history |
+| `<leader>gv` / `<leader>gV` | Open / close Diffview |
+| `<leader>gc` | Diffview: staged changes |
+| `<leader>gh` / `<leader>gH` | Diffview: current file / repository history |
+
+Inside Diffview:
+
+| Key | Action |
+| --- | --- |
+| `<Tab>` / `<S-Tab>` | Next / previous file |
+| `<leader>e` / `<leader>b` | Focus / toggle file panel |
+| `gf` / `<C-w><C-f>` | Open file / open in split |
+| `s` / `S` / `U` / `X` | Stage entry / all / unstage all / restore |
+| `g?` / `q` | Help panel / close Diffview |
 
 ### Text objects and editing
 

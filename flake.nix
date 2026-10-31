@@ -48,6 +48,7 @@
               auto-session
               blink-cmp
               conform-nvim
+              diffview-nvim
               flash-nvim
               friendly-snippets
               harpoon2
