@@ -2,7 +2,7 @@
 local map = vim.keymap.set
 
 map({ "n", "i", "v" }, "<C-s>", "<Cmd>write<CR>", { desc = "Save file" })
-map({ "n", "i", "v" }, "<leader>w", "<Cmd>write<CR>", { desc = "Save file" })
+map({ "n" }, "<leader>w", "<Cmd>write<CR>", { desc = "Save file" })
 
 map("n", "<leader>qq", "<Cmd>quitall!<CR>", { desc = "Quit all" })
 map("n", "<leader>qw", "<C-w>c", { desc = "Close window" })
