@@ -25,20 +25,38 @@ local root_markers = {
 }
 
 function M.width(text)
+  if type(text) ~= "string" or text == "" then
+    return 0
+  end
   return vim.fn.strdisplaywidth(text)
 end
 
 function M.escape(text)
+  if type(text) ~= "string" then
+    text = tostring(text)
+  end
   return (text:gsub("%%", "%%%%"):gsub("\n", " "))
 end
 
+---Whether the buffer should not get a winbar (non-file buffers and plugin UIs).
+---@param bufnr? integer
+---@return boolean
 function M.is_special(bufnr)
   bufnr = bufnr or 0
-  if vim.bo[bufnr].buftype ~= "" then
+  if not vim.api.nvim_buf_is_valid(bufnr) then
     return true
   end
 
-  local ft = vim.bo[bufnr].filetype
+  local bo = vim.bo[bufnr]
+  if bo.buftype ~= "" then
+    return true
+  end
+
+  local ft = bo.filetype
+  if ft == "" then
+    return false
+  end
+
   for _, pattern in ipairs(special_filetypes) do
     if ft:find(pattern) then
       return true
@@ -47,37 +65,28 @@ function M.is_special(bufnr)
   return false
 end
 
-function M.buf_for_win(winnr)
-  local winid = winnr and vim.fn.win_getid(winnr) or 0
-  if winid == 0 then
-    winid = vim.api.nvim_get_current_win()
-  end
-  return vim.api.nvim_win_get_buf(winid)
-end
-
-function M.win_width(winnr)
-  local winid = winnr and vim.fn.win_getid(winnr) or 0
-  if winid == 0 then
-    return vim.o.columns
-  end
-  return vim.api.nvim_win_get_width(winid)
-end
-
+---Resolve the project root for a buffer, caching the result until the buffer is
+---renamed, wiped, or the working directory changes.
+---@param bufnr integer
+---@return string
 function M.project_root(bufnr)
   if root_cache[bufnr] then
     return root_cache[bufnr]
   end
 
   local name = vim.api.nvim_buf_get_name(bufnr)
-  local root = name ~= "" and vim.fs.root(name, root_markers) or nil
+  local is_file = name ~= "" and vim.bo[bufnr].buftype == ""
+  local root = is_file and vim.fs.root(name, root_markers) or nil
   root = root or vim.fn.getcwd()
   root_cache[bufnr] = root
   return root
 end
 
+---@param bufnr integer
+---@return string
 function M.relative_path(bufnr)
   local name = vim.api.nvim_buf_get_name(bufnr)
-  if name == "" then
+  if name == "" or vim.bo[bufnr].buftype ~= "" then
     return ""
   end
 
@@ -89,6 +98,8 @@ function M.relative_path(bufnr)
   return rel:gsub("\\", "/")
 end
 
+---@param path string
+---@return string dir, string base, string ext
 function M.split_path(path)
   local dir = vim.fn.fnamemodify(path, ":h")
   dir = dir == "." and "" or dir .. "/"
@@ -99,6 +110,11 @@ function M.split_path(path)
   return dir, base, ext == "" and "" or "." .. ext
 end
 
+---Truncate a single line from the right, keeping `max_width` display cells.
+---Uses a binary search over characters to avoid one Vimscript call per char.
+---@param text string
+---@param max_width integer
+---@return string
 function M.truncate_right(text, max_width)
   if max_width <= 0 then
     return ""
@@ -110,19 +126,23 @@ function M.truncate_right(text, max_width)
     return "…"
   end
 
-  local out = {}
-  local used = 0
-  for _, char in ipairs(vim.fn.split(text, "\\zs")) do
-    local char_width = M.width(char)
-    if used + char_width + 1 > max_width then
-      break
+  local lo, hi = 0, vim.fn.strchars(text)
+  while lo < hi do
+    local mid = math.floor((lo + hi + 1) / 2)
+    if M.width(vim.fn.strcharpart(text, 0, mid)) + 1 <= max_width then
+      lo = mid
+    else
+      hi = mid - 1
     end
-    table.insert(out, char)
-    used = used + char_width
   end
-  return table.concat(out) .. "…"
+  return vim.fn.strcharpart(text, 0, lo) .. "…"
 end
 
+---Truncate a path from the left, preserving the file name and as many trailing
+---directories as fit.
+---@param path string
+---@param max_width integer
+---@return string
 function M.truncate_path(path, max_width)
   if max_width <= 0 then
     return ""
@@ -158,70 +178,70 @@ function M.truncate_path(path, max_width)
   return M.truncate_right(file, max_width)
 end
 
+---Fit as many trailing breadcrumb items as possible within `max_width`,
+---reserving room for the truncation marker when items are dropped.
+---@param items table[]
+---@param max_width integer
+---@return table[] fitted, boolean truncated
 function M.fit_breadcrumbs(items, max_width)
   if max_width <= 0 or #items == 0 then
     return {}, false
   end
 
   local sep_width = M.width(" › ")
-  local ellipsis_width = M.width("…")
-  local function item_width(item)
-    return M.width(item.icon) + 1 + M.width(item.name)
+  local marker_width = M.width("…") + sep_width
+
+  local widths = {}
+  for i, item in ipairs(items) do
+    widths[i] = M.width(item.icon) + 1 + M.width(item.name)
   end
-  local function total_width(list)
-    local total = 0
-    for i, item in ipairs(list) do
-      total = total + item_width(item)
-      if i > 1 then
-        total = total + sep_width
+
+  ---@param budget integer
+  ---@return table[] kept, integer used
+  local function fit(budget)
+    local kept = {}
+    local used = 0
+    for i = #items, 1, -1 do
+      local cost = widths[i] + (used > 0 and sep_width or 0)
+      if used + cost > budget then
+        break
       end
+      table.insert(kept, 1, items[i])
+      used = used + cost
     end
-    return total
+    return kept, used
   end
 
-  local kept = {}
-  for i = #items, 1, -1 do
-    local candidate = { items[i] }
-    vim.list_extend(candidate, kept)
-    if total_width(candidate) <= max_width then
-      kept = candidate
-    else
-      break
-    end
-  end
-
-  if #kept == 0 then
-    local current = items[#items]
-    local available = max_width - M.width(current.icon) - 1
-    if available < 1 then
-      return {}, false
-    end
-    return {
-      {
-        name = M.truncate_right(current.name, available),
-        icon = current.icon,
-        icon_fg = current.icon_fg,
-        current = true,
-      },
-    }, true
-  end
-
-  local truncated = #kept < #items
-  if truncated and #kept > 1 then
-    while #kept > 1 and total_width(kept) + ellipsis_width + sep_width > max_width do
-      table.remove(kept, 1)
-    end
-    if total_width(kept) + ellipsis_width + sep_width > max_width then
-      truncated = false
-    end
-  end
+  local kept = fit(max_width)
   if #kept == #items then
-    truncated = false
+    return kept, false
   end
 
-  return kept, truncated
+  -- Truncation is active: reserve space for the marker before fitting again.
+  local refit = fit(max_width - marker_width)
+  if #refit > 0 then
+    return refit, true
+  end
+
+  -- Not even one crumb plus marker fits; show a single truncated deepest crumb.
+  local current = items[#items]
+  local available = max_width - M.width(current.icon) - 1
+  if available < 1 then
+    return {}, false
+  end
+  return {
+    {
+      name = M.truncate_right(current.name, available),
+      icon = current.icon,
+      icon_fg = current.icon_fg,
+      current = true,
+    },
+  }, false
 end
 
+---Resolve the foreground color of a highlight group (cached per ColorScheme).
+---@param group? string
+---@return string|nil
 function M.icon_fg(group)
   if not group then
     return nil
@@ -237,18 +257,21 @@ function M.icon_fg(group)
 end
 
 local augroup = vim.api.nvim_create_augroup("HeirlineUtils", { clear = true })
+
 vim.api.nvim_create_autocmd("ColorScheme", {
   group = augroup,
   callback = function()
     fg_cache = {}
   end,
 })
-vim.api.nvim_create_autocmd({ "BufFilePost", "BufDelete" }, {
+
+vim.api.nvim_create_autocmd({ "BufFilePost", "BufDelete", "BufWipeout" }, {
   group = augroup,
   callback = function(args)
     root_cache[args.buf] = nil
   end,
 })
+
 vim.api.nvim_create_autocmd("DirChanged", {
   group = augroup,
   callback = function()

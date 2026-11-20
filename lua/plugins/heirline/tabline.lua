@@ -4,49 +4,69 @@ local heirline_utils = require("heirline.utils")
 local theme = require("plugins.heirline.theme")
 local utils = require("plugins.heirline.utils")
 
-local p = theme.get()
+local function p()
+  return theme.get()
+end
 
 local M = {}
 
+---User-defined buffer order. Reconciled by listed_buffers() on every redraw.
 local order = {}
+local buf_meta = {}
+local buf_cache = {}
 
-local function listed_buffers()
-  local listed = {}
-  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted then
-      listed[bufnr] = true
-    end
+local function invalidate()
+  for i = #buf_cache, 1, -1 do
+    buf_cache[i] = nil
   end
-
-  local next_order = {}
-  for _, bufnr in ipairs(order) do
-    if listed[bufnr] then
-      next_order[#next_order + 1] = bufnr
-      listed[bufnr] = nil
-    end
-  end
-
-  local remaining = {}
-  for bufnr in pairs(listed) do
-    remaining[#remaining + 1] = bufnr
-  end
-  table.sort(remaining)
-  vim.list_extend(next_order, remaining)
-
-  order = next_order
-  return order
 end
 
+---@return table<integer, boolean>
+local function listed_set()
+  local set = {}
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted then
+      set[bufnr] = true
+    end
+  end
+  return set
+end
+
+---Pure: returns the current buffer list in display order without mutating `order`.
+---@return integer[]
+local function listed_buffers()
+  local remaining = listed_set()
+  local out = {}
+  for _, bufnr in ipairs(order) do
+    if remaining[bufnr] then
+      out[#out + 1] = bufnr
+      remaining[bufnr] = nil
+    end
+  end
+
+  local rest = vim.tbl_keys(remaining)
+  table.sort(rest)
+  vim.list_extend(out, rest)
+  return out
+end
+
+local function sync_order()
+  order = listed_buffers()
+end
+
+---@return integer|nil
 local function current_index()
   local current = vim.api.nvim_get_current_buf()
-  for i, bufnr in ipairs(listed_buffers()) do
+  for i, bufnr in ipairs(order) do
     if bufnr == current then
       return i
     end
   end
 end
 
+---@param delta integer
 function M.move(delta)
+  sync_order()
   local index = current_index()
   if not index then
     return
@@ -58,26 +78,55 @@ function M.move(delta)
   end
 
   order[index], order[target] = order[target], order[index]
-  vim.cmd.redrawtabline()
+  invalidate() -- heirline only clears its own cache on BufAdd/BufDelete
+  vim.cmd("redrawtabline")
 end
 
 function M.close_others()
   local current = vim.api.nvim_get_current_buf()
+  local failed = 0
+
   for _, bufnr in ipairs(listed_buffers()) do
     if bufnr ~= current then
-      pcall(vim.api.nvim_buf_delete, bufnr, { force = false })
+      if vim.bo[bufnr].modified or not pcall(vim.api.nvim_buf_delete, bufnr, { force = false }) then
+        failed = failed + 1
+      end
     end
   end
-  vim.cmd.redrawtabline()
+
+  if failed > 0 then
+    vim.notify(("%d buffer(s) not closed (unsaved changes)"):format(failed), vim.log.levels.WARN)
+  end
+  vim.cmd("redrawtabline")
+end
+
+---@param bufnr integer
+---@return table
+local function meta(bufnr)
+  local cached = buf_meta[bufnr]
+  if cached then
+    return cached
+  end
+
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  local display = name == "" and "[No Name]" or vim.fn.fnamemodify(name, ":t")
+  local icon, icon_hl = MiniIcons.get("file", name == "" and display or name)
+
+  cached = {
+    name = display,
+    icon = icon,
+    icon_fg = utils.icon_fg(icon_hl) or p().text,
+  }
+  buf_meta[bufnr] = cached
+  return cached
 end
 
 local Buffer = {
   init = function(self)
-    local name = vim.api.nvim_buf_get_name(self.bufnr)
-    self.name = name == "" and "[No Name]" or vim.fn.fnamemodify(name, ":t")
-    local icon, icon_hl = MiniIcons.get("file", name == "" and self.name or name)
-    self.icon = icon
-    self.icon_fg = utils.icon_fg(icon_hl) or p.text
+    local info = meta(self.bufnr)
+    self.name = info.name
+    self.icon = info.icon
+    self.icon_fg = info.icon_fg
   end,
   {
     provider = function(self)
@@ -93,11 +142,11 @@ local Buffer = {
     end,
     hl = function(self)
       if self.is_active then
-        return { fg = p.text, bold = true }
+        return { fg = p().text, bold = true }
       elseif self.is_visible then
-        return { fg = p.subtext1 }
+        return { fg = p().subtext1 }
       else
-        return { fg = p.overlay1 }
+        return { fg = p().overlay1 }
       end
     end,
   },
@@ -106,7 +155,9 @@ local Buffer = {
       return vim.bo[self.bufnr].modified
     end,
     provider = " ●",
-    hl = { fg = p.peach },
+    hl = function()
+      return { fg = p().peach }
+    end,
   },
   { provider = "  " },
   on_click = {
@@ -122,19 +173,30 @@ local Buffer = {
 
 local left_trunc = {
   provider = "‹ ",
-  hl = { fg = p.overlay0 },
+  hl = function()
+    return { fg = p().overlay0 }
+  end,
 }
 
 local right_trunc = {
   provider = " ›",
-  hl = { fg = p.overlay0 },
+  hl = function()
+    return { fg = p().overlay0 }
+  end,
 }
 
-M.tabline = heirline_utils.make_buflist(Buffer, left_trunc, right_trunc, listed_buffers, false)
+M.tabline = heirline_utils.make_buflist(Buffer, left_trunc, right_trunc, listed_buffers, buf_cache)
 
 function M.setup_keys()
   local map = vim.keymap.set
-  map("n", "<leader>bp", "<cmd>lua Snacks.picker.buffers()<CR>", { desc = "Buffer pick" })
+  map("n", "<leader>bp", function()
+    local ok, snacks = pcall(require, "snacks")
+    if not ok then
+      vim.notify("Snacks is not available", vim.log.levels.WARN)
+      return
+    end
+    snacks.picker.buffers()
+  end, { desc = "Buffer pick" })
   map("n", "<leader>bc", M.close_others, { desc = "Close other buffers" })
   map("n", "<leader>bh", function()
     M.move(-1)
@@ -145,11 +207,20 @@ function M.setup_keys()
 end
 
 local augroup = vim.api.nvim_create_augroup("HeirlineTabline", { clear = true })
-vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete", "BufModifiedSet", "BufFilePost" }, {
-  group = augroup,
-  callback = function()
-    vim.cmd.redrawtabline()
-  end,
-})
+vim.api.nvim_create_autocmd(
+  { "BufAdd", "BufDelete", "BufWipeout", "BufFilePost", "BufModifiedSet", "ColorScheme" },
+  {
+    group = augroup,
+    callback = function(args)
+      if args.event == "ColorScheme" then
+        buf_meta = {}
+      else
+        buf_meta[args.buf] = nil
+      end
+      invalidate()
+      vim.cmd("redrawtabline")
+    end,
+  }
+)
 
 return M

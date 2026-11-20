@@ -1,61 +1,79 @@
 local theme = require("plugins.heirline.theme")
 local utils = require("plugins.heirline.utils")
 
-local p = theme.get()
-
-local function mode_name()
-  local mode = vim.api.nvim_get_mode().mode
-  local names = {
-    n = "NORMAL",
-    no = "NORMAL",
-    nov = "NORMAL",
-    noV = "NORMAL",
-    i = "INSERT",
-    ic = "INSERT",
-    ix = "INSERT",
-    v = "VISUAL",
-    V = "V-LINE",
-    ["\22"] = "V-BLOCK",
-    s = "SELECT",
-    S = "S-LINE",
-    ["\19"] = "S-BLOCK",
-    R = "REPLACE",
-    Rc = "REPLACE",
-    Rx = "REPLACE",
-    c = "COMMAND",
-    cv = "COMMAND",
-    ce = "COMMAND",
-    r = "PROMPT",
-    rm = "MORE",
-    ["!"] = "SHELL",
-    t = "TERMINAL",
-  }
-  return names[mode] or mode:upper()
+local function p()
+  return theme.get()
 end
 
-local mode_colors = {
-  NORMAL = p.blue,
-  INSERT = p.green,
-  VISUAL = p.mauve,
-  ["V-LINE"] = p.mauve,
-  ["V-BLOCK"] = p.mauve,
-  SELECT = p.sky,
-  ["S-LINE"] = p.sky,
-  ["S-BLOCK"] = p.sky,
-  REPLACE = p.red,
-  COMMAND = p.yellow,
-  PROMPT = p.peach,
-  MORE = p.peach,
-  SHELL = p.peach,
-  TERMINAL = p.teal,
+local mode_names = {
+  n = "NORMAL",
+  no = "NORMAL",
+  nov = "NORMAL",
+  noV = "NORMAL",
+  i = "INSERT",
+  ic = "INSERT",
+  ix = "INSERT",
+  v = "VISUAL",
+  V = "V-LINE",
+  ["\22"] = "V-BLOCK",
+  s = "SELECT",
+  S = "S-LINE",
+  ["\19"] = "S-BLOCK",
+  R = "REPLACE",
+  Rc = "REPLACE",
+  Rx = "REPLACE",
+  c = "COMMAND",
+  cv = "COMMAND",
+  ce = "COMMAND",
+  r = "PROMPT",
+  rm = "MORE",
+  ["!"] = "SHELL",
+  t = "TERMINAL",
 }
 
+local mode_color_keys = {
+  NORMAL = "blue",
+  INSERT = "green",
+  VISUAL = "mauve",
+  ["V-LINE"] = "mauve",
+  ["V-BLOCK"] = "mauve",
+  SELECT = "sky",
+  ["S-LINE"] = "sky",
+  ["S-BLOCK"] = "sky",
+  REPLACE = "red",
+  COMMAND = "yellow",
+  PROMPT = "peach",
+  MORE = "peach",
+  SHELL = "peach",
+  TERMINAL = "teal",
+}
+
+---@param mode? string
+---@return string
+local function mode_name(mode)
+  mode = mode or vim.api.nvim_get_mode().mode
+  if mode == "" then
+    return "NORMAL"
+  end
+  return mode_names[mode] or mode_names[mode:sub(1, 1)] or mode:upper()
+end
+
+---@param name string
+---@return table
+local function mode_hl(name)
+  local key = mode_color_keys[name]
+  return { fg = (key and p()[key]) or p().text, bold = true }
+end
+
 local Mode = {
-  provider = function()
-    return mode_name() .. " "
+  init = function(self)
+    self.mode = mode_name()
   end,
-  hl = function()
-    return { fg = mode_colors[mode_name()] or p.text, bold = true }
+  provider = function(self)
+    return self.mode .. " "
+  end,
+  hl = function(self)
+    return mode_hl(self.mode)
   end,
   update = "ModeChanged",
 }
@@ -67,10 +85,13 @@ local Macro = {
   provider = function()
     return "REC @" .. vim.fn.reg_recording() .. " "
   end,
-  hl = { fg = p.red, bold = true },
+  hl = function()
+    return { fg = p().red, bold = true }
+  end,
   update = { "RecordingEnter", "RecordingLeave" },
 }
 
+---@return table|nil
 local function git_status()
   return vim.b.gitsigns_status_dict
 end
@@ -78,54 +99,91 @@ end
 local GitBranch = {
   condition = function()
     local status = git_status()
-    return status ~= nil and status.head ~= nil and status.head ~= ""
+    return type(status) == "table" and status.head ~= nil and status.head ~= ""
   end,
   provider = function()
     return "󰊢 " .. utils.escape(git_status().head) .. " "
   end,
-  hl = { fg = p.blue },
-  update = { "BufEnter", "BufWritePost", "User" },
+  hl = function()
+    return { fg = p().blue }
+  end,
+  update = { "BufEnter", "BufWritePost" },
 }
 
-local function git_diff(field, sign, color)
+---@param field string
+---@param sign string
+---@param color_key string
+---@return table
+local function git_diff(field, sign, color_key)
   return {
     condition = function()
       local status = git_status()
-      return status ~= nil and (status[field] or 0) > 0
+      return type(status) == "table" and (status[field] or 0) > 0
     end,
     provider = function()
       return sign .. git_status()[field] .. " "
     end,
-    hl = { fg = color },
-    update = { "BufEnter", "BufWritePost", "User" },
+    hl = function()
+      return { fg = p()[color_key] }
+    end,
+    update = { "BufEnter", "BufWritePost" },
   }
 end
 
-local GitAdded = git_diff("added", "+", p.green)
-local GitChanged = git_diff("changed", "~", p.yellow)
-local GitRemoved = git_diff("removed", "-", p.red)
+local GitAdded = git_diff("added", "+", "green")
+local GitChanged = git_diff("changed", "~", "yellow")
+local GitRemoved = git_diff("removed", "-", "red")
 
-local function diagnostic_count(severity)
-  return #vim.diagnostic.get(0, { severity = severity })
+-- Diagnostics: compute per-severity counts once per buffer per redraw, not
+-- once per component. Keyed by buffer because statuslines are evaluated per
+-- window (splits show different buffers).
+local diag_cache = {}
+
+local diag_augroup = vim.api.nvim_create_augroup("HeirlineDiagnostics", { clear = true })
+vim.api.nvim_create_autocmd({ "DiagnosticChanged", "BufEnter", "BufDelete", "BufWipeout" }, {
+  group = diag_augroup,
+  callback = function(args)
+    diag_cache[args.buf] = nil
+  end,
+})
+
+---@return table<integer, integer>
+local function diagnostic_counts()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local counts = diag_cache[bufnr]
+  if not counts then
+    if vim.tbl_count(diag_cache) > 128 then
+      diag_cache = {}
+    end
+    counts = vim.diagnostic.count(bufnr)
+    diag_cache[bufnr] = counts
+  end
+  return counts
 end
 
-local function diagnostic(severity, icon, color)
+---@param severity integer
+---@param icon string
+---@param color_key string
+---@return table
+local function diagnostic(severity, icon, color_key)
   return {
     condition = function()
-      return diagnostic_count(severity) > 0
+      return (diagnostic_counts()[severity] or 0) > 0
     end,
     provider = function()
-      return icon .. " " .. diagnostic_count(severity) .. " "
+      return icon .. " " .. diagnostic_counts()[severity] .. " "
     end,
-    hl = { fg = color },
+    hl = function()
+      return { fg = p()[color_key] }
+    end,
     update = { "DiagnosticChanged", "BufEnter" },
   }
 end
 
-local DiagnosticError = diagnostic(vim.diagnostic.severity.ERROR, "󰅚", p.red)
-local DiagnosticWarn = diagnostic(vim.diagnostic.severity.WARN, "󰀪", p.yellow)
-local DiagnosticInfo = diagnostic(vim.diagnostic.severity.INFO, "󰋽", p.blue)
-local DiagnosticHint = diagnostic(vim.diagnostic.severity.HINT, "󰌶", p.teal)
+local DiagnosticError = diagnostic(vim.diagnostic.severity.ERROR, "󰅚", "red")
+local DiagnosticWarn = diagnostic(vim.diagnostic.severity.WARN, "󰀪", "yellow")
+local DiagnosticInfo = diagnostic(vim.diagnostic.severity.INFO, "󰋽", "blue")
+local DiagnosticHint = diagnostic(vim.diagnostic.severity.HINT, "󰌶", "teal")
 
 local Search = {
   condition = function()
@@ -133,29 +191,34 @@ local Search = {
   end,
   provider = function()
     local ok, count = pcall(vim.fn.searchcount, { maxcount = 99, timeout = 100 })
-    if not ok or not count or count.total == 0 then
+    if not ok or type(count) ~= "table" or (count.total or 0) == 0 then
       return ""
     end
     local suffix = count.incomplete == 1 and "+" or ""
-    return "[" .. count.current .. "/" .. count.total .. suffix .. "] "
+    return "[" .. (count.current or 0) .. "/" .. count.total .. suffix .. "] "
   end,
-  hl = { fg = p.overlay1 },
+  hl = function()
+    return { fg = p().overlay1 }
+  end,
   update = { "CursorMoved", "CmdlineLeave", "SearchWrapped" },
 }
 
 local Lsp = {
-  condition = function()
-    return #vim.lsp.get_clients({ bufnr = 0 }) > 0
-  end,
   provider = function()
+    local clients = vim.lsp.get_clients({ bufnr = 0 })
+    if #clients == 0 then
+      return ""
+    end
     local names = {}
-    for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+    for _, client in ipairs(clients) do
       names[#names + 1] = client.name
     end
     table.sort(names)
     return "[" .. utils.escape(table.concat(names, ", ")) .. "] "
   end,
-  hl = { fg = p.overlay1 },
+  hl = function()
+    return { fg = p().overlay1 }
+  end,
   update = { "LspAttach", "LspDetach", "BufEnter" },
 }
 
@@ -166,25 +229,21 @@ local FileType = {
   provider = function()
     return utils.escape(vim.bo.filetype) .. " "
   end,
-  hl = { fg = p.overlay1 },
+  hl = function()
+    return { fg = p().overlay1 }
+  end,
   update = { "FileType", "BufEnter" },
 }
 
-local Location = {
-  provider = function()
-    return vim.fn.line(".") .. ":" .. vim.fn.col(".") .. " "
-  end,
-  hl = { fg = p.text },
-  update = { "CursorMoved", "CursorMovedI", "BufEnter" },
-}
-
-local Percentage = {
+local Position = {
   provider = function()
     local line = vim.fn.line(".")
     local total = math.max(vim.fn.line("$"), 1)
-    return math.floor(line * 100 / total) .. "% "
+    return string.format("%d:%d %d%% ", line, vim.fn.virtcol("."), math.floor(line * 100 / total))
   end,
-  hl = { fg = p.overlay1 },
+  hl = function()
+    return { fg = p().text }
+  end,
   update = { "CursorMoved", "CursorMovedI", "BufEnter" },
 }
 
@@ -203,6 +262,5 @@ return {
   { provider = "%=" },
   Lsp,
   FileType,
-  Location,
-  Percentage,
+  Position,
 }
