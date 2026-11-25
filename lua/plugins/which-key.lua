@@ -22,10 +22,7 @@ return {
           { "<leader>v", group = "treesitter" },
           { "<leader>.", group = "scratch/rename" },
           { "<leader>i", group = "insert" },
-          { "<leader>p", hidden = true },
           { "<leader>w", hidden = true },
-          { "<leader>y", hidden = true },
-          { "<leader>Y", hidden = true },
         },
       })
 

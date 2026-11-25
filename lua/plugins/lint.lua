@@ -4,6 +4,7 @@ return {
     event = { "BufReadPost", "BufNewFile" },
     after = function()
       require("lint").linters_by_ft = {
+        haskell = { "hlint" },
         nix = { "statix" },
         yaml = { "yamllint" },
       }

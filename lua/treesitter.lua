@@ -1,7 +1,49 @@
--- Incremental node selection for the <leader>vt keymap. Neovim ships the
--- treesitter API but no "select the node under the cursor" helper, so this
--- grows the visual selection from the node to its parent on every call.
+-- Incremental node selection for the <leader>vt keymap, plus treesitter start
+-- up. Neovim ships the treesitter API but no "select the node under the cursor"
+-- helper, so this grows the visual selection from the node to its parent on
+-- every call.
 local M = {}
+
+-- Highlighting ----------------------------------------------------------------
+-- Neovim only starts treesitter from its own ftplugins (lua, c, markdown, ...),
+-- so every other filetype would silently fall back to regex syntax. Start it for
+-- any filetype we ship a grammar for; `start` also turns off regex syntax.
+
+---@param bufnr? integer
+function M.start(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  if vim.treesitter.highlighter.active[bufnr] then
+    return
+  end
+  pcall(vim.treesitter.start, bufnr) -- no parser for this filetype
+end
+
+---@param bufnr? integer
+function M.stop(bufnr)
+  pcall(vim.treesitter.stop, bufnr or vim.api.nvim_get_current_buf())
+end
+
+---@param bufnr? integer
+function M.toggle(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+  if vim.treesitter.highlighter.active[bufnr] then
+    M.stop(bufnr)
+  else
+    M.start(bufnr)
+  end
+end
+
+function M.setup()
+  vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("TreesitterStart", { clear = true }),
+    desc = "Start treesitter highlighting when a parser is available",
+    callback = function(args)
+      M.start(args.buf)
+    end,
+  })
+end
+
+-- Node selection --------------------------------------------------------------
 
 --- nearest named ancestor (skips anonymous nodes such as brackets/commas)
 local function named_parent(node)

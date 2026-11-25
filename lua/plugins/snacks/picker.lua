@@ -100,7 +100,6 @@ return {
     map("n", "<leader>sq", "<cmd>lua Snacks.picker.qflist()<CR>", { desc = "Quickfix list" })
     map("n", "<leader>sl", "<cmd>lua Snacks.picker.loclist()<CR>", { desc = "Location list" })
     map("n", "<leader>sR", "<cmd>lua Snacks.picker.resume()<CR>", { desc = "Resume last picker" })
-    map("n", "<leader>sc", "<cmd>lua Snacks.picker.command_history()<CR>", { desc = "Command history" })
     map("n", "<leader>s:", "<cmd>lua Snacks.picker.command_history()<CR>", { desc = "Command history" })
     map("n", "<leader>sC", "<cmd>lua Snacks.picker.commands()<CR>", { desc = "Commands" })
     map("n", '<leader>s"', "<cmd>lua Snacks.picker.registers()<CR>", { desc = "Registers" })

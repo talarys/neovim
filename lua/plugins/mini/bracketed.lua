@@ -11,8 +11,9 @@ return {
     oldfile = { suffix = "o", options = {} },
     quickfix = { suffix = "q", options = {} },
     treesitter = { suffix = "t", options = {} },
-    -- the undo target only works after wiring MiniBracketed.register_undo_state
-    undo = { suffix = "" },
+    -- "u" also remaps u/<C-R> so every undo/redo is recorded in the linear
+    -- history MiniBracketed walks
+    undo = { suffix = "u" },
     window = { suffix = "w", options = {} },
     yank = { suffix = "y", options = {} },
   },

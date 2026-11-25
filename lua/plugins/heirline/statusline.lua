@@ -203,6 +203,9 @@ local Search = {
   update = { "CursorMoved", "CmdlineLeave", "SearchWrapped" },
 }
 
+-- maximum width of the client list in the statusline
+local LSP_NAMES_MAX_WIDTH = 40
+
 local Lsp = {
   provider = function()
     local clients = vim.lsp.get_clients({ bufnr = 0 })
@@ -214,7 +217,10 @@ local Lsp = {
       names[#names + 1] = client.name
     end
     table.sort(names)
-    return "[" .. utils.escape(table.concat(names, ", ")) .. "] "
+    -- the client list is informational; cap it so it cannot crowd out the rest
+    -- of the bar when a buffer is served by many clients
+    local text = utils.truncate_right(table.concat(names, ", "), LSP_NAMES_MAX_WIDTH)
+    return "[" .. utils.escape(text) .. "] "
   end,
   hl = function()
     return { fg = p().overlay1 }

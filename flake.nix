@@ -11,7 +11,11 @@
       ...
     }:
     let
-      forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.platforms.all;
+      forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+      runtimePkg = p: {
+        data = p;
+        prefix = true;
+      };
       module =
         {
           config,
@@ -68,34 +72,34 @@
             ];
           };
 
-          # Only LSPs, formatters and linters belong here. Language runtimes
-          # and toolchains are provided by the system. HLS and rustfmt are also
-          # system-provided because their nix packages pull in GHC/rustc.
-          config.runtimePkgs = map (p: {
-            data = p;
-            prefix = true;
-          }) (with pkgs; [
-            eslint
-            fd
-            fourmolu
-            hlint
-            lazygit
-            lua-language-server
-            nil
-            nixfmt
-            prettier
-            python3
-            ripgrep
-            ruff
-            rust-analyzer
-            statix
-            taplo
-            ty
-            typescript-language-server
-            vscode-langservers-extracted
-            yamllint
-            yaml-language-server
-          ]);
+          # LSP servers, formatters, linters and the CLI tools Neovim shells out
+          # to. Language runtimes and toolchains are provided by the system; HLS
+          # and rustfmt are also system-provided because their nix packages pull
+          # in GHC/rustc.
+          config.runtimePkgs = map runtimePkg (
+            with pkgs;
+            [
+              eslint
+              fd
+              fourmolu
+              hlint
+              lazygit
+              lua-language-server
+              nil
+              nixfmt
+              prettier
+              ripgrep
+              ruff
+              rust-analyzer
+              statix
+              taplo
+              ty
+              typescript-language-server
+              vscode-langservers-extracted
+              yamllint
+              yaml-language-server
+            ]
+          );
         };
       wrapper = wrappers.lib.evalModule module;
     in
@@ -122,6 +126,32 @@
           default = self.packages.${system}.neovim;
         }
       );
+      # `nix fmt` hands every argument to the formatter, so only Nix files reach
+      # nixfmt. Bare `nix fmt` formats the tracked Nix files; Lua is formatted by
+      # lua_ls (see lua/plugins/lsp.lua) and left alone here.
+      formatter = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        pkgs.writeShellScriptBin "fmt" ''
+          status=0
+
+          format() {
+            case "$1" in
+              *.nix) ${pkgs.nixfmt}/bin/nixfmt "$1" || status=$? ;;
+            esac
+          }
+
+          if [ "$#" -eq 0 ]; then
+            while IFS= read -r -d "" file; do format "$file"; done < <(git ls-files -z "*.nix")
+          else
+            for file in "$@"; do format "$file"; done
+          fi
+
+          exit "$status"
+        ''
+      );
       nixosModules = {
         default = self.nixosModules.neovim;
         neovim = wrappers.lib.getInstallModule {
@@ -131,6 +161,8 @@
       };
       homeModules = {
         default = self.homeModules.neovim;
+        # the install module only contributes the wrapped package, so the same
+        # module is usable from NixOS and home-manager
         neovim = self.nixosModules.neovim;
       };
     };

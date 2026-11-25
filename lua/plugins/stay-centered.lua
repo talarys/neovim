@@ -1,11 +1,18 @@
 return {
   {
     "stay-centered.nvim",
+    -- loaded once the UI exists: setup() installs the cursor hooks, so the
+    -- plugin is active from startup instead of only after the first toggle
+    event = "DeferredUIEnter",
     keys = {
       { "<leader>uC", function() require("stay-centered").toggle() end, desc = "Toggle stay-centered" },
     },
     after = function()
-      require("stay-centered").setup({})
+      require("stay-centered").setup({
+        -- window scrolling is left to snacks.scroll, which animates it; only
+        -- cursor motions re-center the view here
+        allow_scroll_move = true,
+      })
     end,
   },
 }

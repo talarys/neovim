@@ -1,17 +1,54 @@
+-- Servers are listed once and reused by the keymaps below and by startup.
+local servers = {
+  -- core
+  "lua_ls",
+  "nil_ls",
+  -- web and data
+  "ts_ls",
+  "eslint",
+  "jsonls",
+  "cssls",
+  "html",
+  "yamlls",
+  "taplo",
+  -- other languages
+  "ty",
+  "ruff",
+  "rust_analyzer",
+}
+
+-- HLS drags GHC into the closure, so it is system-provided. Only enable it when
+-- the system actually has it.
+if vim.fn.executable("haskell-language-server-wrapper") == 1 then
+  table.insert(servers, "hls")
+end
+
+---Stop every running client. A stopped client is not reused, so calling
+---`vim.lsp.enable()` afterwards starts fresh ones for the open buffers.
+local function stop_servers()
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    client:stop()
+  end
+end
+
 return {
   {
     "nvim-lspconfig",
-    event = "FileType",
+    -- a real file must be opened, so plugin UIs (dashboard, help, terminal)
+    -- never load the LSP stack
+    event = { "BufReadPre", "BufNewFile" },
     keys = {
-      { "<leader>li", "<cmd>checkhealth vim.lsp<CR>",                                           desc = "LSP info" },
-      { "<leader>ls", "<cmd>doautocmd FileType<CR>",                                            desc = "Start LSP" },
-      { "<leader>lq", "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end<CR>", desc = "Stop LSP" },
+      { "<leader>li", "<cmd>checkhealth vim.lsp<CR>", desc = "LSP info" },
+      { "<leader>ls", function() vim.lsp.enable(servers) end, desc = "Start LSP" },
+      { "<leader>lq", stop_servers, desc = "Stop LSP" },
       {
         "<leader>lR",
-        "<cmd>lua for _, c in ipairs(vim.lsp.get_clients()) do c:stop() end vim.cmd('doautocmd FileType')<CR>",
+        function()
+          stop_servers()
+          vim.lsp.enable(servers)
+        end,
         desc = "Restart LSP",
       },
-      { "<leader>uv", "<cmd>lua _G.toggle_virtual_text()<CR>", desc = "Toggle diagnostic virtual text" },
     },
     after = function()
       vim.lsp.config("lua_ls", {
@@ -73,51 +110,21 @@ return {
         },
       })
 
-      -- lspsaga owns rename, code actions and type definitions. Remove Neovim's
-      -- built-in defaults for those so each action has exactly one implementation.
-      for _, lhs in ipairs({ "grn", "gra", "grt" }) do
-        pcall(vim.keymap.del, "n", lhs)
-      end
-
-      -- LSP keymaps, declared explicitly instead of relying on Neovim's defaults
+      -- grr (references), gri (implementation) and gO (document symbols) are
+      -- Neovim defaults and need no mapping here. grx (codelens) and gD
+      -- (declaration) are not, so they are added per buffer.
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(event)
-          local bufmap = function(mode, lhs, rhs, desc)
-            vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = "LSP: " .. desc })
+          local bufmap = function(lhs, rhs, desc)
+            vim.keymap.set("n", lhs, rhs, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
-          -- rename, code actions and type definitions are handled by lspsaga
-          bufmap("n", "grx", vim.lsp.codelens.run, "Run codelens")
-          bufmap("n", "grr", vim.lsp.buf.references, "References")
-          bufmap("n", "gri", vim.lsp.buf.implementation, "Implementation")
-          bufmap("n", "gO", vim.lsp.buf.document_symbol, "Document symbols")
-          bufmap("n", "gD", vim.lsp.buf.declaration, "Declaration")
+          bufmap("grx", vim.lsp.codelens.run, "Run codelens")
+          bufmap("gD", vim.lsp.buf.declaration, "Declaration")
         end,
       })
 
-      vim.lsp.enable({
-        -- core
-        "lua_ls",
-        "nil_ls",
-        -- web and data
-        "ts_ls",
-        "eslint",
-        "jsonls",
-        "cssls",
-        "html",
-        "yamlls",
-        "taplo",
-        -- other languages
-        "ty",
-        "ruff",
-        "rust_analyzer",
-      })
-
-      -- HLS drags GHC into the closure, so it is system-provided. Only enable
-      -- it when the system actually has it.
-      if vim.fn.executable("haskell-language-server-wrapper") == 1 then
-        vim.lsp.enable("hls")
-      end
+      vim.lsp.enable(servers)
     end,
   },
 }
