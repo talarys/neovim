@@ -12,6 +12,12 @@ return {
         -- window scrolling is left to snacks.scroll, which animates it; only
         -- cursor motions re-center the view here
         allow_scroll_move = true,
+        -- pickers (the explorer included) drive their own list and preview
+        -- panes, so forcing the cursor to stay centered fights them
+        skip_filetypes = {
+          "snacks_picker_list",
+          "snacks_picker_input",
+        },
       })
     end,
   },
