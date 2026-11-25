@@ -7,6 +7,12 @@ return {
     dep_of = { "nvim-lspconfig" },
     after = function()
       require("blink.cmp").setup({
+        -- snacks owns its input buffers (picker prompt, rename prompt); a
+        -- completion menu there only fights what is being typed
+        enabled = function()
+          local filetype = vim.bo.filetype
+          return filetype ~= "snacks_picker_input" and filetype ~= "snacks_input"
+        end,
         -- use the "enter" preset and override the keys we care about explicitly
         keymap = {
           preset = "enter",
