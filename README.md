@@ -7,6 +7,9 @@ and lazily loaded with [lze](https://github.com/BirdeeHub/lze).
 ```bash
 nix build .
 ./result/bin/nvim
+
+nix fmt          # format the Nix files
+nix flake check  # headless smoke test of the config
 ```
 
 Language runtimes are system-provided. The flake ships LSPs, formatters,

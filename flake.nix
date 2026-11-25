@@ -152,6 +152,23 @@
           exit "$status"
         ''
       );
+      # Headless smoke test of the configuration: `nix flake check` builds the
+      # wrapper and exercises the plugins and keymaps with no visible fallback.
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          neovim = self.wrappers.neovim.wrap { inherit pkgs; };
+        in
+        {
+          smoke = pkgs.runCommand "neovim-config-smoke" { nativeBuildInputs = [ neovim ]; } ''
+            cp ${./checks/smoke.lua} smoke.lua
+            export HOME="$TMPDIR"
+            nvim --headless -c "luafile smoke.lua"
+            touch "$out"
+          '';
+        }
+      );
       nixosModules = {
         default = self.nixosModules.neovim;
         neovim = wrappers.lib.getInstallModule {
