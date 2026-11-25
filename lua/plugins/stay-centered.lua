@@ -13,8 +13,12 @@ return {
         -- cursor motions re-center the view here
         allow_scroll_move = true,
         -- pickers (the explorer included) drive their own list and preview
-        -- panes, so forcing the cursor to stay centered fights them
+        -- panes, so forcing the cursor to stay centered fights them. The same
+        -- goes for markdown: render-markdown moves lines between the raw text
+        -- and the rendered view, which makes recentring jump around
         skip_filetypes = {
+          "markdown",
+          "markdown.mdx",
           "snacks_picker_list",
           "snacks_picker_input",
         },
