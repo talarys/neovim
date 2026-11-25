@@ -15,6 +15,8 @@ local servers = {
   "ty",
   "ruff",
   "rust_analyzer",
+  -- markdown
+  "marksman",
 }
 
 -- HLS drags GHC into the closure, so it is system-provided. Only enable it when

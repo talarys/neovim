@@ -3,6 +3,7 @@ return {
   { import = "plugins.blink" },
   { import = "plugins.friendly-snippets" },
   { import = "plugins.lsp" },
+  { import = "plugins.markdown" },
   { import = "plugins.mini" },
   { import = "plugins.heirline" },
   { import = "plugins.colorscheme" },

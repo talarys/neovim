@@ -80,6 +80,30 @@ local function run()
     "LSP buffer mappings are missing"
   )
 
+  -- markdown: the renderer loads and marksman attaches, in a directory that has
+  -- the root marker marksman looks for
+  local project = vim.fn.tempname()
+  vim.fn.mkdir(project .. "/.git", "p")
+  local note = project .. "/note.md"
+  vim.fn.writefile({ "# heading", "", "- [ ] todo" }, note)
+  vim.cmd.edit(note)
+  check(
+    wait(function() return loaded("render-markdown") end),
+    "render-markdown did not load for a markdown buffer"
+  )
+  check(vim.fn.maparg("<leader>um", "n") ~= "", "the <leader>um toggle is missing")
+  check(
+    wait(function()
+      for _, client in ipairs(vim.lsp.get_clients({ bufnr = 0 })) do
+        if client.name == "marksman" then
+          return true
+        end
+      end
+      return false
+    end),
+    "marksman did not attach to a markdown buffer"
+  )
+
   -- keymaps: one is intentionally gone, the rest are load bearing
   check(vim.fn.maparg("jk", "i") == "", "the jk insert mapping should be removed")
   check(vim.fn.maparg("jj", "i") ~= "", "the jj insert mapping is missing")

@@ -32,6 +32,7 @@ linters and CLI tools.
 | `nvim-lint` | `statix` for Nix, `yamllint` for YAML |
 | `nvim-treesitter` | Parsing, highlighting, folds |
 | `nvim-treesitter-textobjects` | Function/class/parameter text objects and motions |
+| `render-markdown.nvim` | Inline markdown rendering: headings, tables, callouts |
 | `SchemaStore-nvim` | JSON and YAML schemas |
 | `gitsigns-nvim` | Hunk signs, staging, blame, word diff |
 | `diffview-nvim` | Side-by-side diffs and file history |
@@ -55,6 +56,7 @@ linters and CLI tools.
 - Python: `ty`, `ruff`, `ruff_format`
 - Rust: `rust_analyzer`, `rustfmt`
 - Haskell: `hls`, `fourmolu`, `hlint` when available
+- Markdown: `marksman`
 - Generic: `yamllint`, SchemaStore schemas
 
 ## Keymaps
@@ -68,17 +70,13 @@ Leader is `Space`. `?` is Flash search.
 | `<C-s>` / `<leader>w` | Save |
 | `<leader>qq` / `<leader>qw` | Quit all / close window |
 | `<leader>\|` / `<leader>-` | Vertical / horizontal split |
-| `jk` / `jj` | Exit insert mode |
+| `jj` | Exit insert mode |
 | `<leader>cf` | Change filetype |
 | `<leader>id` | Insert current date |
 | `<leader>gd` | Toggle diff on all windows |
 | `<leader>vt` | Select treesitter node |
-| `<leader>k` | Show keymaps |
+| `<leader>?` | Show keymaps |
 | `<Esc>` | Clear search highlight |
-| `<C-d>` / `<C-u>` | Half page down/up, centered |
-| `n` / `N` | Next/previous match, centered |
-| `<leader>y` / `<leader>Y` | Yank / yank line to system clipboard |
-| `<leader>p` / `<leader>P` | Paste / paste over selection |
 | `<Esc><Esc>` (terminal) | Exit terminal mode |
 
 ### Buffers and files
@@ -106,7 +104,7 @@ Leader is `Space`. `?` is Flash search.
 | `<leader>ss` / `sS` | LSP symbols / workspace symbols |
 | `<leader>sd` / `sD` | Diagnostics / buffer diagnostics |
 | `<leader>sq` / `sl` / `sR` | Quickfix / location list / resume |
-| `<leader>sc` / `s:` / `sC` | Command history / command history / commands |
+| `<leader>s:` / `sC` | Command history / commands |
 | `<leader>s"` / `sa` / `sH` / `si` | Registers / autocmds / highlights / icons |
 | `<leader>sj` / `sm` / `sM` | Jumps / marks / man pages |
 | `<leader>su` / `st` / `sT` | Undo / todo comments / TODO-FIX-FIXME |
@@ -181,9 +179,10 @@ Inside Diffview:
 | Key | Action |
 | --- | --- |
 | `<leader>ud` / `<leader>uv` | Diagnostics / virtual text |
-| `<leader>ul` / `<leader>uL` | Line numbers / relative numbers |
+| `<leader>ul` | Line and relative numbers (together) |
 | `<leader>uh` / `<leader>uT` | Inlay hints / treesitter |
 | `<leader>us` / `<leader>uw` / `<leader>uc` | Spelling / wrap / conceal |
+| `<leader>um` / `<leader>uC` | Markdown rendering / stay-centered |
 | `<leader>uD` / `<leader>un` | Dim / dismiss notifications |
 
 ### Sessions

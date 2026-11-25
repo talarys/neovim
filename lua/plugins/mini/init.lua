@@ -13,7 +13,9 @@ local modules = {
 return {
   {
     "mini.nvim",
-    dep_of = "heirline.nvim",
+    -- heirline renders with the icons; render-markdown resolves its icon
+    -- provider at setup, so mini must be loaded before a markdown buffer
+    dep_of = { "heirline.nvim", "render-markdown.nvim" },
     event = "DeferredUIEnter",
     after = function()
       for _, name in ipairs(modules) do

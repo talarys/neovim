@@ -65,6 +65,7 @@
               nvim-lspconfig
               nvim-navic
               nvim-treesitter-textobjects
+              render-markdown-nvim
               smart-splits-nvim
               stay-centered-nvim
               which-key-nvim
@@ -85,6 +86,7 @@
               hlint
               lazygit
               lua-language-server
+              marksman
               nil
               nixfmt
               prettier
